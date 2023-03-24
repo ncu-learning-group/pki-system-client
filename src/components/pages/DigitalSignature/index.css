@@ -1,0 +1,11 @@
+.row {
+    margin: 3rem 0 2rem 0;
+}
+.Statistic {
+    width: 40rem;
+    /*white-space: nowrap;*/
+    /*overflow: hidden;*/
+    /*text-overflow: ellipsis;*/
+    word-wrap: break-word;
+    max-width: 100%;
+}

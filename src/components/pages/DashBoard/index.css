@@ -1,0 +1,22 @@
+/*.background {*/
+/*    background-image: url("../../../assets/images/dashboard-background.jpg");*/
+/*}*/
+
+.startNow {
+    height: 5rem;
+    width: 10rem;
+    /*background-color: cornflowerblue !important;*/
+    /*color: antiquewhite !important;*/
+    font-size: 21px;
+    border: 1px solid #3a2237;
+    background-color: mediumpurple;
+}
+
+.startNow:hover {
+    height: 5rem;
+    width: 10rem;
+    /*background-color: #ffecdf !important;*/
+    /*color: #1f1d18 !important;*/
+    font-size: 21px;
+    background-color: whitesmoke;
+}

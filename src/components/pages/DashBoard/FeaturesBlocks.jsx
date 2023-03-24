@@ -2,10 +2,12 @@ import React from "react";
 import { Button, Typography } from "antd";
 import "./index.css";
 import { ArrowRightOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
-function FeaturesBlocks() {
+function FeaturesBlocks(props) {
   const navigate = useNavigate();
+
+  const { selectedKeys, setSelectedKeys } = useOutletContext();
 
   return (
     <section>
@@ -292,6 +294,7 @@ function FeaturesBlocks() {
               shape={"round"}
               icon={<ArrowRightOutlined />}
               onClick={() => {
+                setSelectedKeys("/DigitalSignature");
                 navigate("/DigitalSignature");
               }}
             >

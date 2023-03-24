@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 function HeaderLayout(props) {
   const navigate = useNavigate();
-  const [selectedKeys, setSelectedKeys] = useState([]);
+  const { selectedKeys, setSelectedKeys } = props;
 
   useEffect(() => {
     setSelectedKeys([window.location.pathname]);

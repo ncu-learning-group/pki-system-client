@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Breadcrumb, Image, Layout, Menu } from "antd";
 import { Content, Footer, Header } from "antd/es/layout/layout.js";
@@ -8,12 +8,15 @@ import HeaderLayout from "./HeaderLayout.jsx";
 import FooterLayout from "./FooterLayout.jsx";
 
 function RootLayout(props) {
+  const [selectedKeys, setSelectedKeys] = useState([]);
+  const menu = { selectedKeys, setSelectedKeys };
+
   return (
     <Layout
       className="layout"
       style={{ backgroundImage: `url(${background})` }}
     >
-      <HeaderLayout />
+      <HeaderLayout {...menu} />
       <Content
         style={{
           padding: "0 50px",
@@ -29,7 +32,7 @@ function RootLayout(props) {
         {/*  <Breadcrumb.Item>App</Breadcrumb.Item>*/}
         {/*</Breadcrumb>*/}
         <div className="site-layout-content">
-          <Outlet />
+          <Outlet context={menu} />
         </div>
       </Content>
       <FooterLayout />

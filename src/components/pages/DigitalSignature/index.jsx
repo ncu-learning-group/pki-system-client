@@ -99,12 +99,12 @@ function DigitalSignature(props) {
 
   // 生成AES密文
   const generateAESMessage = (name, message) => {
-    // const content = {
-    //   messageContent: message,
-    //   messageName: name,
-    // };
+    const content = {
+      messageContent: message,
+      messageName: name,
+    };
     return encryptContent(
-      message,
+      content,
       symmetricEncryptionKey,
       symmetricEncryptionAlgorithmIV
     );

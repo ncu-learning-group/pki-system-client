@@ -5,6 +5,9 @@ import FeaturesZigzag from "./FeaturesZigzag.jsx";
 import "./index.css";
 
 function DashBoard(props) {
+  const { selectedKeys, setSelectedKeys } = props;
+  const menu = { selectedKeys, setSelectedKeys };
+
   return (
     <div className="flex flex-col min-h-screen overflow-hidden">
       {/*  Site header */}
@@ -18,7 +21,7 @@ function DashBoard(props) {
         {/*</div>*/}
         {/*  Page sections */}
         {/*<HeroHome />*/}
-        <FeaturesBlocks />
+        <FeaturesBlocks {...menu} />
         {/*<FeaturesZigzag />*/}
         {/*<Testimonials />*/}
         {/*<Newsletter />*/}

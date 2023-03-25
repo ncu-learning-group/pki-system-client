@@ -15,7 +15,10 @@ import {
 } from "antd";
 import { useForm } from "antd/es/form/Form.js";
 import "./index.css";
-import { encryptContent } from "../../../utils/aes.js";
+import {
+  encryptContent,
+  regenerateSymmetricEncryptionKey,
+} from "../../../utils/aes.js";
 import { post, get } from "../../../axios/index.jsx";
 import { md5 } from "../../../utils/md5.js";
 import { encryptKey } from "../../../utils/rsa.js";
@@ -137,9 +140,9 @@ function DigitalSignature(props) {
       sign: MD5Message, // 数字签名
       symmetricKeyCiphertext: RSAMessage, // 数字信封
 
-      asymmetricCryptographicAlgorithm, // RSA
-      symmetricEncryptionAlgorithm, // AES
-      hashAlgorithm, // MD5
+      // asymmetricCryptographicAlgorithm, // RSA
+      // symmetricEncryptionAlgorithm, // AES
+      // hashAlgorithm, // MD5
     };
 
     post(SEND, param).then((res) => {
@@ -172,29 +175,6 @@ function DigitalSignature(props) {
         setAsymmetricCryptographicKey(res.data.replaceAll("\r\n", ""));
       }
     });
-  };
-
-  // 重新随机生成AES密钥
-  const regenerateSymmetricEncryptionKey = () => {
-    const arr = []; // 整体长度为62
-    const result = [];
-
-    for (let i = 0; i < 10; i++) {
-      arr.push(i.toString());
-    }
-    for (let j = 65; j <= 90; j++) {
-      arr.push(String.fromCharCode(j));
-    }
-    for (let k = 97; k <= 122; k++) {
-      arr.push(String.fromCharCode(k));
-    }
-
-    for (let i = 0; i < 16; i++) {
-      result.push(arr[Math.floor(Math.random() * 62)]);
-    }
-    return result.reduce((previousValue, currentValue, currentIndex, array) => {
-      return previousValue + currentValue;
-    }, "");
   };
 
   const refreshSymmetricEncryptionKey = () => {

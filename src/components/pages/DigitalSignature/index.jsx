@@ -8,7 +8,7 @@ import {
   Divider,
   Form,
   Input,
-  message,
+  notification,
   Row,
   Select,
   Statistic,
@@ -20,7 +20,7 @@ import { post, get } from "../../../axios/index.jsx";
 import { md5 } from "../../../utils/md5.js";
 import { encryptKey } from "../../../utils/rsa.js";
 import { SyncOutlined } from "@ant-design/icons";
-import axios from "axios";
+import { CHANGE_SECRET_KEY, GET_PUBLIC_KEY, SEND } from "../../../axios/url.js";
 
 const contentStyle = {
   height: "160px",
@@ -52,7 +52,7 @@ function DigitalSignature(props) {
   const [form3] = useForm();
   const [form4] = useForm();
 
-  const [messageApi, contextHolder] = message.useMessage();
+  const [api, contextHolder] = notification.useNotification();
 
   // 初始化rsa密钥
   useEffect(() => {
@@ -63,8 +63,8 @@ function DigitalSignature(props) {
   useEffect(() => {
     refreshSymmetricEncryptionKey();
     form4.setFieldsValue({
-      messageName: "default",
-      messageContent: "hi",
+      messageName: "message1",
+      messageContent: "hello world",
     });
   }, []);
 
@@ -142,27 +142,34 @@ function DigitalSignature(props) {
       hashAlgorithm, // MD5
     };
 
-    post("/rsa/send1", param).then((res) => {
+    post(SEND, param).then((res) => {
       if (res.success) {
-        messageApi.success("消息传输成功");
+        api.success({
+          message: `成功`,
+          description: `消息传输成功`,
+        });
       }
     });
   };
 
   // 向后端请求RSA公钥
   const getAsymmetricCryptographicKey = () => {
-    get("/api/rsa/getPublicKey", {}).then((res) => {
-      if (res.code === "success") {
-        setAsymmetricCryptographicKey(res.data);
+    get(GET_PUBLIC_KEY, {}).then((res) => {
+      if (res.code === "SUCCESS") {
+        setAsymmetricCryptographicKey(res.data.replaceAll("\r\n", ""));
       }
     });
   };
 
   // 要求后端重新生成RSA公钥密钥
   const regenerateAsymmetricCryptographicKey = () => {
-    post("/api/rsa/changeKey", {}).then((res) => {
-      if (res.success) {
-        messageApi.success("重新生成RSA公钥密钥成功");
+    get(CHANGE_SECRET_KEY, {}).then((res) => {
+      if (res.code === "SUCCESS") {
+        api.success({
+          message: `成功`,
+          description: `重新生成RSA公钥密钥成功`,
+        });
+        setAsymmetricCryptographicKey(res.data.replaceAll("\r\n", ""));
       }
     });
   };
@@ -200,6 +207,7 @@ function DigitalSignature(props) {
 
   return (
     <React.Fragment>
+      {contextHolder}
       <Card title="加密算法" style={{ margin: "10px" }}>
         {/*第一项： 非对称加密算法*/}
         <Row className={"row"}>

@@ -128,7 +128,7 @@ function DigitalSignature(props) {
     await form2.validateFields();
     await form4.validateFields();
     const { messageName, messageContent } = form4.getFieldsValue(true);
-    const AESMessage = generateAESMessage(messageContent);
+    const AESMessage = generateAESMessage(messageName, messageContent);
     const MD5Message = generateMD5Message(messageContent);
     const RSAMessage = generateRSAMessage(
       symmetricEncryptionKey,

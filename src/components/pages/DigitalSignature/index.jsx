@@ -16,10 +16,11 @@ import {
 import { useForm } from "antd/es/form/Form.js";
 import "./index.css";
 import { encryptContent } from "../../../utils/aes.js";
-import { post } from "../../../axios/index.jsx";
+import { post, get } from "../../../axios/index.jsx";
 import { md5 } from "../../../utils/md5.js";
 import { encryptKey } from "../../../utils/rsa.js";
 import { SyncOutlined } from "@ant-design/icons";
+import axios from "axios";
 
 const contentStyle = {
   height: "160px",
@@ -54,9 +55,9 @@ function DigitalSignature(props) {
   const [messageApi, contextHolder] = message.useMessage();
 
   // 初始化rsa密钥
-  // useEffect(() => {
-  //   getSymmetricEncryptionKey();
-  // }, []);
+  useEffect(() => {
+    getAsymmetricCryptographicKey();
+  }, []);
 
   // 初始化表单项
   useEffect(() => {
@@ -150,16 +151,16 @@ function DigitalSignature(props) {
 
   // 向后端请求RSA公钥
   const getAsymmetricCryptographicKey = () => {
-    post("/test", {}).then((res) => {
-      if (res.success) {
-        setAsymmetricCryptographicKey(res.content);
+    get("/api/rsa/getPublicKey", {}).then((res) => {
+      if (res.code === "success") {
+        setAsymmetricCryptographicKey(res.data);
       }
     });
   };
 
   // 要求后端重新生成RSA公钥密钥
   const regenerateAsymmetricCryptographicKey = () => {
-    post("/test", {}).then((res) => {
+    post("/api/rsa/changeKey", {}).then((res) => {
       if (res.success) {
         messageApi.success("重新生成RSA公钥密钥成功");
       }

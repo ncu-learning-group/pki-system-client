@@ -13,12 +13,28 @@ import {
   ProFormCheckbox,
   ProFormText,
 } from "@ant-design/pro-components";
-import { Button, Divider, Space, Tabs } from "antd";
+import {
+  Button,
+  Checkbox,
+  Divider,
+  Form,
+  Input,
+  Modal,
+  notification,
+  Space,
+  Tabs,
+} from "antd";
 import { useNavigate } from "react-router-dom";
 import "./index.css";
 import { post } from "../../axios/index.jsx";
-import { USER_LOGIN } from "../../axios/url.js";
+import { USER_LOGIN, USER_REGISTER } from "../../axios/url.js";
 import { useForm } from "antd/es/form/Form.js";
+import { useDispatch } from "react-redux";
+import { setFirstIn, setUserName } from "../../store/loginSlice.js";
+import { layout } from "../common/layoutStyle.js";
+import MessageManage from "../pages/InformationBoard/MessageManage/index.jsx";
+import { md5 } from "../../utils/md5.js";
+import Register from "./Register.jsx";
 
 const iconStyles = {
   color: "rgba(0, 0, 0, 0.2)",
@@ -32,20 +48,62 @@ const Login = () => {
 
   const navigator = useNavigate();
 
-  useEffect(() => {}, []);
+  const [modal, modalContextHolder] = Modal.useModal();
+  const [api, notificationContextHolder] = notification.useNotification();
 
-  const login = (username, password) => {
-    navigator("/");
+  const [checked, setChecked] = useState(false);
+  const [editVisible, setEditVisible] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+
+  const [form] = useForm();
+
+  const login = (userName, password) => {
     post(USER_LOGIN, {
-      username: "ljx",
-      password: "ljx",
-      // username: username,
-      // password: "password",
+      userName,
+      password: md5(md5(password)),
+    }).then((res) => {
+      if (res.code === "SUCCESS") {
+        navigator("/");
+      } else {
+        api.error({
+          message: `失败`,
+          description: `登录失败：用户名或者密码错误`,
+        });
+      }
     });
+  };
+
+  const handleOk = () => {
+    setConfirmLoading(true);
+    form.validateFields().then((res) => {
+      post(USER_REGISTER, { ...res, password: md5(md5(res.password)) })
+        .then((res) => {
+          if (res.code === "SUCCESS") {
+            setEditVisible(false);
+            api.success({
+              message: "成功",
+              description: "注册成功",
+            });
+          } else {
+            api.success({
+              message: "失败",
+              description: `注册失败：${res.message}`,
+            });
+          }
+        })
+        .finally(() => {
+          setConfirmLoading(false);
+        });
+    });
+  };
+
+  const handleCancel = () => {
+    setEditVisible(false);
   };
 
   return (
     <div className={"login"}>
+      {notificationContextHolder}
       <LoginFormPage
         backgroundImageUrl="src/assets/images/OIP-C.jpg"
         logo="src/assets/images/数据展示.svg"
@@ -210,18 +268,38 @@ const Login = () => {
             marginBlockEnd: 24,
           }}
         >
-          <ProFormCheckbox noStyle name="autoLogin">
+          <Checkbox
+            noStyle
+            name="autoLogin"
+            checked={checked}
+            onClick={() => {
+              setEditVisible(true);
+            }}
+          >
             自动登录
-          </ProFormCheckbox>
+          </Checkbox>
           <a
             style={{
               float: "right",
             }}
+            onClick={() => {
+              setEditVisible(true);
+            }}
           >
-            忘记密码
+            注册用户
           </a>
         </div>
       </LoginFormPage>
+
+      <Register
+        editVisible={editVisible}
+        handleOk={handleOk}
+        handleCancel={handleCancel}
+        confirmLoading={confirmLoading}
+        form={form}
+      />
+
+      {modalContextHolder}
     </div>
   );
 };

@@ -1,15 +1,43 @@
 import React, { useEffect, useState } from "react";
-import { Col, Image, Menu, Row } from "antd";
+import { Col, Image, Menu, Modal, notification, Row } from "antd";
 import icon from "../../assets/images/icon.png";
 import { Header } from "antd/es/layout/layout.js";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { post } from "../../axios/index.jsx";
+import { GET_USERNAME } from "../../axios/url.js";
 
 function HeaderLayout(props) {
   const navigate = useNavigate();
   const { selectedKeys, setSelectedKeys } = props;
 
+  const [userName, setUserName] = useState(null);
+
+  const [modal, modalContextHolder] = Modal.useModal();
+  const [api, notificationContextHolder] = notification.useNotification();
+
   useEffect(() => {
     setSelectedKeys([window.location.pathname]);
+  }, []);
+
+  useEffect(() => {
+    post(GET_USERNAME, {})
+      .then((res) => {
+        if (res.code === "SUCCESS") {
+          setUserName(res.data);
+        } else {
+          api.error({
+            message: `失败`,
+            description: `对话已经过期`,
+          });
+        }
+      })
+      .catch((reason) => {
+        api.error({
+          message: `失败`,
+          description: `对话已经过期`,
+        });
+      });
   }, []);
 
   const onMenuItemClick = (e) => {
@@ -20,6 +48,7 @@ function HeaderLayout(props) {
   return (
     <Header style={{ background: "white", display: "flex" }}>
       {/*<div style={{ backgroundImage: `url(${icon})`, width: "10%" }} />*/}
+      {modalContextHolder}
       <Row style={{ width: "100%" }}>
         <Col span={4} style={{ height: "100%" }}>
           <Image
@@ -45,8 +74,12 @@ function HeaderLayout(props) {
                 label: "首页",
               },
               {
-                key: "/DigitalSignature",
-                label: "数字信封",
+                key: "/KeyManage",
+                label: "密钥管理",
+              },
+              {
+                key: "/InformationBoard",
+                label: "信息板管理",
               },
               {
                 key: "/SystemManage",
@@ -68,7 +101,7 @@ function HeaderLayout(props) {
             items={[
               {
                 key: "welcome",
-                label: "欢迎您，admin",
+                label: `欢迎您，${userName}`,
                 children: [
                   {
                     key: "exit",
@@ -80,6 +113,7 @@ function HeaderLayout(props) {
           />
         </Col>
       </Row>
+      {notificationContextHolder}
     </Header>
   );
 }

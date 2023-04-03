@@ -2,10 +2,12 @@
 .marquee-container {
     background-color: aliceblue;
     width: 100%;
-    height: 50px;
+    height: 150px;
     overflow: hidden;
     line-height: 50px;
     position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .marquee-content {
@@ -14,6 +16,7 @@
     animation: marquee linear infinite;
     color: cornflowerblue;
     position: absolute;
+    font-size: 80px;
 }
 
 @keyframes marquee {

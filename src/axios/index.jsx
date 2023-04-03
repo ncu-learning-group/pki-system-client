@@ -11,7 +11,7 @@ const config = {
   ],
   transformResponse: [
     function (data) {
-      return data;
+      return JSON.parse(data);
     },
   ],
   headers: {

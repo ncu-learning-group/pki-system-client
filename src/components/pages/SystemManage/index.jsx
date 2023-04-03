@@ -35,8 +35,8 @@ function SystemManage(props) {
               label: "用户管理",
             },
             {
-              key: "/SystemManage/MessageManage",
-              label: "消息管理",
+              key: "AboutUs",
+              label: "关于我们",
             },
           ]}
         />

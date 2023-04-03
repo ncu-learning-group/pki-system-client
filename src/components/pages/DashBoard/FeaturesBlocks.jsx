@@ -294,8 +294,8 @@ function FeaturesBlocks(props) {
               shape={"round"}
               icon={<ArrowRightOutlined />}
               onClick={() => {
-                setSelectedKeys("/DigitalSignature");
-                navigate("/DigitalSignature");
+                setSelectedKeys("/KeyManage");
+                navigate("/KeyManage");
               }}
             >
               现在开始

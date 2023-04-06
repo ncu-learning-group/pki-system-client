@@ -8,6 +8,7 @@ import Test from "../components/Test/index.jsx";
 import InformationBoard from "../components/pages/InformationBoard/index.jsx";
 import KeyManage from "../components/pages/KeyManage/index.jsx";
 import AboutUs from "../components/pages/SystemManage/AboutUs.jsx";
+import InformationBoardManage from "../components/pages/SystemManage/InformationBoardManage/index.jsx";
 
 export const routerConfig = [
   {
@@ -41,6 +42,10 @@ export const routerConfig = [
               {
                 element: <UserManage />,
                 index: true,
+              },
+              {
+                path: "InformationBoardManage",
+                element: <InformationBoardManage />,
               },
               {
                 path: "AboutUs",

@@ -4,7 +4,8 @@ import { SettingOutlined } from "@ant-design/icons";
 import KeyFrame from "./KeyFrame/KeyFrame.jsx";
 import { useForm } from "antd/es/form/Form.js";
 import { layout, tailLayout } from "../../common/layoutStyle.js";
-import InformationBoardManage from "./InformationBoardManage/index.jsx";
+import InformationBoardManage from "../SystemManage/InformationBoardManage/index.jsx";
+import { useSelector } from "react-redux";
 
 function InformationBoard(props) {
   const [form1] = useForm();
@@ -12,7 +13,7 @@ function InformationBoard(props) {
 
   const [api, contextHolder] = notification.useNotification();
 
-  const [messages, setMessages] = useState(["Sample1", "Sample2"]);
+  const messages = useSelector((state) => state.message.messages);
 
   // ******************文字滚动******************************
   const [textSetting, setTextSetting] = useState(false);
@@ -135,9 +136,9 @@ function InformationBoard(props) {
         )}
       </Card>
 
-      <Card title="信息板列表" style={{ margin: "15px" }}>
-        <InformationBoardManage setMessages={setMessages} />
-      </Card>
+      {/*<Card title="信息板列表" style={{ margin: "15px" }}>*/}
+      {/*  <InformationBoardManage setMessages={setMessages} />*/}
+      {/*</Card>*/}
     </React.Fragment>
   );
 }

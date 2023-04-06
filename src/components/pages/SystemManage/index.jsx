@@ -35,6 +35,10 @@ function SystemManage(props) {
               label: "用户管理",
             },
             {
+              key: "InformationBoardManage",
+              label: "播放管理",
+            },
+            {
               key: "AboutUs",
               label: "关于我们",
             },

@@ -15,7 +15,7 @@ import { getColumns } from "../../../common/getColumns.jsx";
 import { get, post } from "../../../../axios/index.jsx";
 import { layout, tailLayout } from "../../../common/layoutStyle.js";
 import moment from "moment";
-import MessageManage from "../MessageManage/index.jsx";
+import MessageManage from "../../InformationBoard/MessageManage/index.jsx";
 import { encryptContent } from "../../../../utils/aes.js";
 import { md5 } from "../../../../utils/md5.js";
 import { encryptKey } from "../../../../utils/rsa.js";
@@ -28,11 +28,12 @@ import {
   SEND,
 } from "../../../../axios/url.js";
 import { useForm } from "antd/es/form/Form.js";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { checkKey } from "../../../../utils/checkKey.js";
 import { getParam } from "../../../../utils/getParam.js";
 import EncryptModal from "../../../common/EncryptModal.jsx";
 import { pagination } from "../../../common/pagination.js";
+import { setMessages } from "../../../../store/messagesSlice.js";
 
 const TYPES = {
   CREATE: "create",
@@ -40,8 +41,6 @@ const TYPES = {
 };
 
 function InformationBoardManage(props) {
-  const { setMessages } = props;
-
   const asymmetricCryptographicAlgorithm = useSelector(
     (state) => state.key.asymmetricCryptographicAlgorithm
   );
@@ -58,6 +57,8 @@ function InformationBoardManage(props) {
     (state) => state.key.symmetricEncryptionAlgorithmIV
   );
   const hashAlgorithm = useSelector((state) => state.key.hashAlgorithm);
+
+  const dispatch = useDispatch();
 
   const [symmetricKeyCiphertext, setSymmetricKeyCiphertext] = useState("");
   const [ciphertext, setCiphertext] = useState("");
@@ -95,10 +96,12 @@ function InformationBoardManage(props) {
             return item.message;
           });
           if (res.code === "SUCCESS") {
-            setMessages(
-              res.data.content.map((item) => {
-                return item.message;
-              })
+            dispatch(
+              setMessages(
+                res.data.content.map((item) => {
+                  return item.message;
+                })
+              )
             );
             api.success({
               message: `成功`,

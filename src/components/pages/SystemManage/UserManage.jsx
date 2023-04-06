@@ -40,6 +40,42 @@ function UserManage(props) {
     ref.current.reload();
   }, [reload]);
 
+  const showDeleteModal = (row) => {
+    modal.confirm({
+      title: "刪除",
+      content: `你確定要刪除用户:${row.userName}吗？`,
+      onOk: () => {
+        return singleDelete(row)
+          .then((res) => {
+            if (res.code === "SUCCESS") {
+              setReload(!reload);
+              api.success({
+                message: `成功`,
+                description: `删除成功`,
+              });
+              return Promise.resolve();
+            } else {
+              api.error({
+                message: `失败`,
+                description: `删除失败：${res.message}`,
+              });
+              return Promise.reject();
+            }
+          })
+          .catch((reason) => {
+            api.error({
+              message: `失败`,
+              description: `删除失败：${reason}`,
+            });
+            return Promise.reject();
+          });
+      },
+      onCancel: () => {
+        return Promise.resolve();
+      },
+    });
+  };
+
   const columns = [
     {
       title: "序号",
@@ -70,40 +106,14 @@ function UserManage(props) {
         >
           编辑
         </a>,
-        <Popconfirm
-          title="删除"
-          description="你确定删除这个用户吗？"
-          onConfirm={() => {
-            return singleDelete(row)
-              .then((res) => {
-                if (res.code === "SUCCESS") {
-                  setReload(!reload);
-                  api.success({
-                    message: `成功`,
-                    description: `删除成功`,
-                  });
-                  return Promise.resolve();
-                } else {
-                  api.error({
-                    message: `失败`,
-                    description: `删除失败：${res.message}`,
-                  });
-                  return Promise.reject();
-                }
-              })
-              .catch((reason) => {
-                api.error({
-                  message: `失败`,
-                  description: `删除失败：${reason}`,
-                });
-                return Promise.reject();
-              });
+        <a
+          key="delete"
+          onClick={() => {
+            showDeleteModal(row);
           }}
-          okText="是"
-          cancelText="否"
         >
-          <a key="delete">删除</a>
-        </Popconfirm>,
+          删除
+        </a>,
       ],
     },
   ];

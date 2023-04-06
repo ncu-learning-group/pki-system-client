@@ -167,6 +167,20 @@ function InformationBoardManage(props) {
     setEncryptModalConfirmLoading(true);
   };
 
+  const showDeleteModal = (row) => {
+    modal.confirm({
+      title: "刪除",
+      content: `你確定要刪除信息板:${row.id}吗？`,
+      onOk: () => {
+        singleDelete(row);
+        return Promise.resolve();
+      },
+      onCancel: () => {
+        return Promise.resolve();
+      },
+    });
+  };
+
   const columns = [
     {
       title: "序号",
@@ -186,7 +200,7 @@ function InformationBoardManage(props) {
     {
       title: "创建人",
       width: 120,
-      dataIndex: "createdBy",
+      dataIndex: "createdUserName",
     },
     {
       title: "创建时间",
@@ -196,7 +210,7 @@ function InformationBoardManage(props) {
     {
       title: "更新人",
       width: 120,
-      dataIndex: "updatedBy",
+      dataIndex: "updatedUserName",
     },
     {
       title: "更新时间",
@@ -223,23 +237,31 @@ function InformationBoardManage(props) {
         >
           编辑
         </a>,
-        <Popconfirm
-          title="删除"
-          description="你确定删除这条消息吗？"
-          onConfirm={() => {
-            return singleDelete(row)
-              .then(() => {
-                return Promise.resolve();
-              })
-              .catch(() => {
-                return Promise.reject();
-              });
+        <a
+          key={"delete"}
+          onClick={() => {
+            showDeleteModal(row);
           }}
-          okText="是"
-          cancelText="否"
         >
-          <a>删除</a>
-        </Popconfirm>,
+          删除
+        </a>,
+        // <Popconfirm
+        //   title="删除"
+        //   description="你确定删除这条消息吗？"
+        //   onConfirm={() => {
+        //     return singleDelete(row)
+        //       .then(() => {
+        //         return Promise.resolve();
+        //       })
+        //       .catch(() => {
+        //         return Promise.reject();
+        //       });
+        //   }}
+        //   okText="是"
+        //   cancelText="否"
+        // >
+        //   <a>删除</a>
+        // </Popconfirm>,
       ],
     },
   ];

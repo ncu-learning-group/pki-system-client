@@ -139,6 +139,20 @@ function MessageManage(props) {
     setEncryptModalConfirmLoading(true);
   };
 
+  const showDeleteModal = (row) => {
+    modal.confirm({
+      title: "刪除",
+      content: `你確定要刪除消息:${row.id}吗？`,
+      onOk: () => {
+        singleDelete(row);
+        return Promise.resolve();
+      },
+      onCancel: () => {
+        return Promise.resolve();
+      },
+    });
+  };
+
   const columns = [
     {
       title: "序号",
@@ -183,23 +197,14 @@ function MessageManage(props) {
         >
           编辑
         </a>,
-        <Popconfirm
-          title="删除"
-          description="你确定删除这条消息吗？"
-          onConfirm={() => {
-            return singleDelete(row)
-              .then(() => {
-                return Promise.resolve();
-              })
-              .catch(() => {
-                return Promise.reject();
-              });
+        <a
+          key={"delete"}
+          onClick={() => {
+            showDeleteModal(row);
           }}
-          okText="是"
-          cancelText="否"
         >
-          <a>删除</a>
-        </Popconfirm>,
+          删除
+        </a>,
       ],
     },
   ];
@@ -282,6 +287,8 @@ function MessageManage(props) {
         sign={sign}
         saveUri={saveUri}
       />
+
+      {modalContextHolder}
     </React.Fragment>
   );
 }

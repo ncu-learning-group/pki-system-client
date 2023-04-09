@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Carousel, Form, notification, Slider } from "antd";
+import {
+  Button,
+  Card,
+  Carousel,
+  Form,
+  notification,
+  Result,
+  Slider,
+} from "antd";
 import { SettingOutlined } from "@ant-design/icons";
 import KeyFrame from "./KeyFrame/KeyFrame.jsx";
 import { useForm } from "antd/es/form/Form.js";
@@ -77,18 +85,25 @@ function InformationBoard(props) {
         }
       >
         {!textSetting ? (
-          <>
-            {messages.map((value, index, array) => {
-              return (
-                <KeyFrame
-                  key={index}
-                  id={index}
-                  content={value}
-                  speed={speed}
-                />
-              );
-            })}
-          </>
+          messages.length ? (
+            <>
+              {messages.map((value, index, array) => {
+                return (
+                  <KeyFrame
+                    key={index}
+                    id={index}
+                    content={value}
+                    speed={speed}
+                  />
+                );
+              })}
+            </>
+          ) : (
+            <Result
+              status="warning"
+              title="代码正常运行，但是信息板是空的，所以啥也没有"
+            />
+          )
         ) : (
           <Form form={form1} {...layout}>
             <Form.Item
@@ -114,15 +129,22 @@ function InformationBoard(props) {
 
       <Card title="图片滚动" style={{ margin: "10px" }}>
         {!imageSetting ? (
-          <Carousel autoplay>
-            {messages.map((message) => {
-              return (
-                <div>
-                  <div style={contentStyle}>{message}</div>
-                </div>
-              );
-            })}
-          </Carousel>
+          messages.length ? (
+            <Carousel autoplay>
+              {messages.map((message) => {
+                return (
+                  <div>
+                    <div style={contentStyle}>{message}</div>
+                  </div>
+                );
+              })}
+            </Carousel>
+          ) : (
+            <Result
+              status="warning"
+              title="代码正常运行，但是信息板是空的，所以啥也没有"
+            />
+          )
         ) : (
           <Form form={form2} {...layout}>
             <Form.Item
@@ -131,7 +153,7 @@ function InformationBoard(props) {
               rules={[
                 {
                   required: true,
-                  message: "展示消息的条数不能为空",
+                  message: "动画播放速度不能为空",
                 },
               ]}
             >

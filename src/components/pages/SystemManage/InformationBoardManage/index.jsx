@@ -330,6 +330,7 @@ function InformationBoardManage(props) {
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
         width={1500}
+        destroyOnClose
       >
         <Form form={boardForm} {...layout} style={{ marginTop: "3rem" }}>
           <Form.Item

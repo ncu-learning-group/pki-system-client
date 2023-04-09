@@ -3,28 +3,34 @@ import { Col, Image, Menu, Modal, notification, Row } from "antd";
 import icon from "../../assets/images/icon.png";
 import { Header } from "antd/es/layout/layout.js";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { post } from "../../axios/index.jsx";
-import { GET_USERNAME, USER_LOGOUT } from "../../axios/url.js";
+import { GET_USER, USER_LOGOUT } from "../../axios/url.js";
+import { setIsAdmin, setUserId, setUserName } from "../../store/loginSlice.js";
 
 function HeaderLayout(props) {
   const navigate = useNavigate();
   const { selectedKeys, setSelectedKeys } = props;
 
-  const [userName, setUserName] = useState(null);
-
   const [modal, modalContextHolder] = Modal.useModal();
   const [api, notificationContextHolder] = notification.useNotification();
+
+  const dispatch = useDispatch();
+  const userName = useSelector((state) => {
+    return state.login.userName;
+  });
 
   useEffect(() => {
     setSelectedKeys([window.location.pathname]);
   }, []);
 
   useEffect(() => {
-    post(GET_USERNAME, {})
+    post(GET_USER, {})
       .then((res) => {
         if (res.code === "SUCCESS") {
-          setUserName(res.data);
+          dispatch(setUserName(res.data.userName));
+          dispatch(setUserId(res.data.id));
+          dispatch(setIsAdmin(res.data.admin));
         } else {
           api.error({
             message: `失败`,
@@ -79,7 +85,7 @@ function HeaderLayout(props) {
               },
               {
                 key: "/InformationBoard",
-                label: "信息板管理",
+                label: "信息板",
               },
               {
                 key: "/SystemManage",

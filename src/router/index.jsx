@@ -40,12 +40,12 @@ export const routerConfig = [
             element: <SystemManage />,
             children: [
               {
-                element: <UserManage />,
+                element: <InformationBoardManage />,
                 index: true,
               },
               {
-                path: "InformationBoardManage",
-                element: <InformationBoardManage />,
+                path: "UserManage",
+                element: <UserManage />,
               },
               {
                 path: "AboutUs",

@@ -198,17 +198,6 @@ function UserManage(props) {
   return (
     <React.Fragment>
       {notificationContextHolder}
-      {/*<ProTable*/}
-      {/*  actionRef={ref}*/}
-      {/*  reloa={reload}*/}
-      {/*  request={getData}*/}
-      {/*  rowKey="key"*/}
-      {/*  pagination={{*/}
-      {/*    showQuickJumper: true,*/}
-      {/*  }}*/}
-      {/*  columns={columns}*/}
-      {/*  toolBarRender={toolBarRender}*/}
-      {/*/>*/}
 
       <ComProTable
         getData={getData}

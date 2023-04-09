@@ -41,6 +41,10 @@ function InformationBoardManage(props) {
     (state) => state.key.symmetricEncryptionAlgorithmIV
   );
   const hashAlgorithm = useSelector((state) => state.key.hashAlgorithm);
+  const isAdmin = useSelector((state) => state.login.isAdmin);
+  const userId = useSelector((state) => {
+    return state.login.userId;
+  });
 
   const dispatch = useDispatch();
 
@@ -113,8 +117,10 @@ function InformationBoardManage(props) {
 
   const handleOk = () => {
     const boardName = boardForm.getFieldValue("informationBoardName");
+    const object = { boardName };
+    if (board) object.id = board.id;
     const param = getParam(
-      { boardName, id: !!board && board.id },
+      object,
       asymmetricCryptographicKey,
       symmetricEncryptionKey,
       symmetricEncryptionAlgorithmIV
@@ -235,30 +241,37 @@ function InformationBoardManage(props) {
       width: 180,
       key: "option",
       valueType: "option",
-      render: (text, row) => [
-        <a
-          onClick={() => {
-            showPlayModal(row);
-          }}
-        >
-          播放
-        </a>,
-        <a
-          onClick={() => {
-            showEditModal(row);
-          }}
-        >
-          编辑
-        </a>,
-        <a
-          key={"delete"}
-          onClick={() => {
-            showDeleteModal(row);
-          }}
-        >
-          删除
-        </a>,
-      ],
+      render: (text, row) => {
+        const array = [
+          <a
+            onClick={() => {
+              showPlayModal(row);
+            }}
+          >
+            播放
+          </a>,
+        ];
+        if (isAdmin || userId === row.createdBy) {
+          return array.concat([
+            <a
+              onClick={() => {
+                showEditModal(row);
+              }}
+            >
+              编辑
+            </a>,
+            <a
+              key={"delete"}
+              onClick={() => {
+                showDeleteModal(row);
+              }}
+            >
+              删除
+            </a>,
+          ]);
+        }
+        return array;
+      },
     },
   ];
 

@@ -14,6 +14,7 @@ function InformationBoard(props) {
   const [api, contextHolder] = notification.useNotification();
 
   const messages = useSelector((state) => state.message.messages);
+  const [speed, setSpeed] = useState(300);
 
   // ******************文字滚动******************************
   const [textSetting, setTextSetting] = useState(false);
@@ -27,6 +28,8 @@ function InformationBoard(props) {
     form1
       .validateFields()
       .then((res) => {
+        setSpeed(res.playSpeed);
+        setTextSetting(false);
         api.success({
           message: `成功`,
           description: `成功保存设置 `,
@@ -76,7 +79,14 @@ function InformationBoard(props) {
         {!textSetting ? (
           <>
             {messages.map((value, index, array) => {
-              return <KeyFrame key={index} id={index} content={value} />;
+              return (
+                <KeyFrame
+                  key={index}
+                  id={index}
+                  content={value}
+                  speed={speed}
+                />
+              );
             })}
           </>
         ) : (
@@ -87,11 +97,11 @@ function InformationBoard(props) {
               rules={[
                 {
                   required: true,
-                  message: "展示消息的条数不能为空",
+                  message: "动画播放速度不能为空",
                 },
               ]}
             >
-              <Slider min={1} max={10} />
+              <Slider min={300} max={3000} step={50} />
             </Form.Item>
             <Form.Item {...tailLayout}>
               <Button type={"primary"} onClick={saveTextSetting}>

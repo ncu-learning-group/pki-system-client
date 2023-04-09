@@ -95,12 +95,14 @@ function MessageManage(props) {
         description: "消息的输入有问题",
       });
     });
+    const object = {
+      message: messageContent.messageContent,
+      boardId: board.id,
+    };
+    if (message) object.id = message.id;
+
     const param = getParam(
-      {
-        message: messageContent.messageContent,
-        boardId: board.id,
-        id: !!message && message.id,
-      },
+      object,
       asymmetricCryptographicKey,
       symmetricEncryptionKey,
       symmetricEncryptionAlgorithmIV

@@ -18,7 +18,7 @@ function SystemManage(props) {
   };
 
   return (
-    <Layout style={{ height: "50rem", margin: "1rem" }}>
+    <Layout style={{ height: "80rem", margin: "1rem" }}>
       <Sider
         style={{
           backgroundColor: "white",
@@ -35,11 +35,11 @@ function SystemManage(props) {
               label: "用户管理",
             },
             {
-              key: "InformationBoardManage",
+              key: "/SystemManage/InformationBoardManage",
               label: "播放管理",
             },
             {
-              key: "AboutUs",
+              key: "/SystemManage/AboutUs",
               label: "关于我们",
             },
           ]}

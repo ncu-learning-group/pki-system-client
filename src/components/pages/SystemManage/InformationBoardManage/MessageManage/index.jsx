@@ -9,8 +9,8 @@ import {
   Popconfirm,
   Tooltip,
 } from "antd";
-import { getColumns } from "../../../common/getColumns.jsx";
-import { get, post } from "../../../../axios/index.jsx";
+import { getColumns } from "../../../../common/getColumns.jsx";
+import { get, post } from "../../../../../axios/index.jsx";
 import moment from "moment/moment.js";
 import {
   BOARD_DELETE,
@@ -18,13 +18,14 @@ import {
   MESSAGE_DELETE,
   MESSAGE_PAGE,
   MESSAGE_SAVE,
-} from "../../../../axios/url.js";
-import { layout } from "../../../common/layoutStyle.js";
+} from "../../../../../axios/url.js";
+import { layout } from "../../../../common/layoutStyle.js";
 import { useSelector } from "react-redux";
-import { checkKey } from "../../../../utils/checkKey.js";
-import { getParam } from "../../../../utils/getParam.js";
+import { checkKey } from "../../../../../utils/checkKey.js";
+import { getParam } from "../../../../../utils/getParam.js";
 import { useForm } from "antd/es/form/Form.js";
-import EncryptModal from "../../../common/EncryptModal.jsx";
+import EncryptModal from "../../../../common/EncryptModal.jsx";
+import ComProTable from "../../../../common/ComProTable.jsx";
 
 const TYPES = {
   CREATE: "create",
@@ -64,17 +65,14 @@ function MessageManage(props) {
   const [symmetricKeyCiphertext, setSymmetricKeyCiphertext] = useState("");
   const [ciphertext, setCiphertext] = useState("");
   const [sign, setSign] = useState("");
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [afterSuccess, setAfterSuccess] = useState(null);
 
   const [encryptModalVisible, setEncryptModalVisible] = useState(false);
   const [encryptModalConfirmLoading, setEncryptModalConfirmLoading] =
     useState(false);
   const [saveUri, setSaveUri] = useState("");
-
-  const ref = useRef();
-
-  useEffect(() => {
-    ref.current.reload();
-  }, [reload]);
 
   const showCreateModal = () => {
     setType(TYPES.CREATE);
@@ -137,6 +135,35 @@ function MessageManage(props) {
 
     setEncryptModalVisible(true);
     setEncryptModalConfirmLoading(true);
+  };
+
+  const batchDelete = () => {
+    if (!selectedRowKeys.length) {
+      api.error({
+        message: `失败`,
+        description: `没有勾选`,
+      });
+      return;
+    }
+
+    const param = getParam(
+      selectedRowKeys,
+      asymmetricCryptographicKey,
+      symmetricEncryptionKey,
+      symmetricEncryptionAlgorithmIV
+    );
+    const { symmetricKeyCiphertext, ciphertext, sign } = param;
+    setCiphertext(ciphertext);
+    setSymmetricKeyCiphertext(symmetricKeyCiphertext);
+    setSign(sign);
+    setSaveUri(MESSAGE_DELETE);
+
+    setEncryptModalVisible(true);
+    setEncryptModalConfirmLoading(true);
+    setAfterSuccess(() => {
+      setSelectedRowKeys([]);
+      setSelectedRows([]);
+    });
   };
 
   const showDeleteModal = (row) => {
@@ -224,23 +251,27 @@ function MessageManage(props) {
     }
   };
 
+  const toolBarRender = () => {
+    return [
+      <Button onClick={showCreateModal}>新建信息</Button>,
+      <Button onClick={batchDelete} key={"batchDelete"}>
+        批量删除
+      </Button>,
+    ];
+  };
+
   return (
     <React.Fragment>
       {notificationContextHolder}
-      <ProTable
-        request={getData}
-        search={false}
-        actionRef={ref}
-        rowKey="key"
-        pagination={{
-          showQuickJumper: true,
-        }}
-        columns={getColumns(columns)}
-        dateFormatter="string"
-        headerTitle="消息列表"
-        toolBarRender={() => {
-          return [<Button onClick={showCreateModal}>新建信息</Button>];
-        }}
+      <ComProTable
+        getData={getData}
+        reload={reload}
+        selectedRowKeys={selectedRowKeys}
+        setSelectedRowKeys={setSelectedRowKeys}
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
+        columns={columns}
+        toolBarRender={toolBarRender}
       />
 
       <Modal
@@ -286,6 +317,7 @@ function MessageManage(props) {
         ciphertext={ciphertext}
         sign={sign}
         saveUri={saveUri}
+        afterSuccess={afterSuccess}
       />
 
       {modalContextHolder}

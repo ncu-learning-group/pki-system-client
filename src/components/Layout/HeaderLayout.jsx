@@ -5,7 +5,7 @@ import { Header } from "antd/es/layout/layout.js";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { post } from "../../axios/index.jsx";
-import { GET_USERNAME } from "../../axios/url.js";
+import { GET_USERNAME, USER_LOGOUT } from "../../axios/url.js";
 
 function HeaderLayout(props) {
   const navigate = useNavigate();
@@ -92,7 +92,9 @@ function HeaderLayout(props) {
           <Menu
             onClick={(e) => {
               if (e.key === "exit") {
-                navigate("/Login");
+                post(USER_LOGOUT, {}).then(() => {
+                  navigate("/Login");
+                });
               }
             }}
             style={{ padding: "0 30px" }}

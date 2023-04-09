@@ -1,6 +1,7 @@
 import axios from "axios";
 import NProgress from "nprogress";
 import { useNavigate } from "react-router-dom";
+import GlobalRouter from "./GlobalRouter.js";
 
 const config = {
   baseURL: "",
@@ -72,40 +73,27 @@ axios.interceptors.response.use(
     // }
   },
   function (error) {
-    // 对响应错误做点什么
     NProgress.done();
-    console.log("响应失败");
 
-    // 认证失败：后端不认可token
+    // 认证失败：后端不认可
     if (error && error.response) {
       let authfail = false;
-      if (
-        error.response.status === 500 &&
-        error.response.data &&
-        error.response.data.message &&
-        error.response.data.message.indexOf("401") !== -1
-      ) {
+      if (error.response.status === 500) {
         authfail = true;
       } else
         authfail =
           error.response.status === 401 || error.response.status === 418;
 
       // 如果token失效，跳回登录界面
-      if (authfail) {
-        sessionStorage.removeItem("user");
-        // 从cookie中删除token
-        // cookie.remove("token");
-        const navigate = useNavigate();
-        if (
-          window.location.pathname &&
-          window.location.pathname.indexOf("/login") < 0
-        ) {
-          navigate("/Login");
-        }
+      if (
+        authfail &&
+        window.location.pathname &&
+        window.location.pathname.indexOf("/Login") < 0
+      ) {
+        GlobalRouter.navigate("/Login");
       }
     }
-    // return Promise.reject(error);
-    throw error;
+    return Promise.reject(error);
   }
 );
 

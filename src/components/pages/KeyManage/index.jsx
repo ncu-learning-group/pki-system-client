@@ -63,23 +63,8 @@ function KeyManage(props) {
 
   // 初始化非对称密钥和对称密钥
   useEffect(() => {
-    getAsymmetricCryptographicKey();
-
-    const symmetricEncryptionKey = regenerateSymmetricEncryptionKey();
-    dispatch(setSymmetricEncryptionKey(symmetricEncryptionKey));
     form2.setFieldsValue({ symmetricEncryptionKey });
   }, []);
-
-  // 向后端请求RSA公钥
-  const getAsymmetricCryptographicKey = () => {
-    get(GET_PUBLIC_KEY, {}).then((res) => {
-      if (res.code === "SUCCESS") {
-        dispatch(
-          setAsymmetricCryptographicKey(res.data.replaceAll("\r\n", ""))
-        );
-      }
-    });
-  };
 
   // 要求后端重新生成RSA公钥密钥
   const regenerateAsymmetricCryptographicKey = () => {

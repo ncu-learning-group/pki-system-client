@@ -32,7 +32,7 @@ import { useForm } from "antd/es/form/Form.js";
 import { useDispatch } from "react-redux";
 import { setFirstIn, setUserName } from "../../store/loginSlice.js";
 import { layout } from "../common/layoutStyle.js";
-import MessageManage from "../pages/InformationBoard/MessageManage/index.jsx";
+import MessageManage from "../pages/SystemManage/InformationBoardManage/MessageManage/index.jsx";
 import { md5 } from "../../utils/md5.js";
 import Register from "./Register.jsx";
 

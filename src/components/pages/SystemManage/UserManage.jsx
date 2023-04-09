@@ -23,6 +23,7 @@ import { layout } from "../../common/layoutStyle.js";
 import { useForm } from "antd/es/form/Form.js";
 import Register from "../../Login/Register.jsx";
 import { md5 } from "../../../utils/md5.js";
+import ComProTable from "../../common/ComProTable.jsx";
 
 function UserManage(props) {
   const [modal, modalContextHolder] = Modal.useModal();
@@ -31,14 +32,10 @@ function UserManage(props) {
   const [editVisible, setEditVisible] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [reload, setReload] = useState(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
 
   const [form] = useForm();
-
-  const ref = useRef(null);
-
-  useEffect(() => {
-    ref.current.reload();
-  }, [reload]);
 
   const showDeleteModal = (row) => {
     modal.confirm({
@@ -127,6 +124,20 @@ function UserManage(props) {
     return post(USER_DELETE, [row.id]);
   };
 
+  const batchDelete = () => {
+    if (!selectedRowKeys.length) {
+      api.error({
+        message: "错误",
+        description: "没有选中用户",
+      });
+    }
+    return post(USER_DELETE, selectedRowKeys).then(() => {
+      setSelectedRowKeys([]);
+      setSelectedRowKeys([]);
+      setReload(!reload);
+    });
+  };
+
   const getData = async (params) => {
     const { current, pageSize } = params;
     const res = await get(USER_PAGE, {
@@ -170,31 +181,44 @@ function UserManage(props) {
     setEditVisible(false);
   };
 
+  const toolBarRender = () => [
+    <Button
+      key={"create"}
+      onClick={() => {
+        setEditVisible(true);
+      }}
+    >
+      创建用户
+    </Button>,
+    <Button onClick={batchDelete} key={"batchDelete"}>
+      批量删除
+    </Button>,
+  ];
+
   return (
     <React.Fragment>
       {notificationContextHolder}
-      <ProTable
-        actionRef={ref}
-        reloa={reload}
-        request={getData}
-        rowKey="key"
-        pagination={{
-          showQuickJumper: true,
-        }}
+      {/*<ProTable*/}
+      {/*  actionRef={ref}*/}
+      {/*  reloa={reload}*/}
+      {/*  request={getData}*/}
+      {/*  rowKey="key"*/}
+      {/*  pagination={{*/}
+      {/*    showQuickJumper: true,*/}
+      {/*  }}*/}
+      {/*  columns={columns}*/}
+      {/*  toolBarRender={toolBarRender}*/}
+      {/*/>*/}
+
+      <ComProTable
+        getData={getData}
+        reload={reload}
+        selectedRowKeys={selectedRowKeys}
+        setSelectedRowKeys={setSelectedRowKeys}
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
         columns={columns}
-        dateFormatter="string"
-        headerTitle="用户列表"
-        toolBarRender={() => [
-          <Button
-            key={"create"}
-            onClick={() => {
-              setEditVisible(true);
-            }}
-          >
-            创建用户
-          </Button>,
-          // <Button key={"delete"}>删除用户</Button>,
-        ]}
+        toolBarRender={toolBarRender}
       />
 
       <Register

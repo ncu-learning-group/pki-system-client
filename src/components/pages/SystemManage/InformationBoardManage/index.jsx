@@ -1,24 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ProTable } from "@ant-design/pro-components";
-import {
-  Button,
-  Form,
-  Input,
-  Modal,
-  notification,
-  Popconfirm,
-  Select,
-  Slider,
-  Tooltip,
-} from "antd";
-import { getColumns } from "../../../common/getColumns.jsx";
+import { Button, Form, Input, Modal, notification } from "antd";
 import { get, post } from "../../../../axios/index.jsx";
 import { layout, tailLayout } from "../../../common/layoutStyle.js";
-import moment from "moment";
-import MessageManage from "../../InformationBoard/MessageManage/index.jsx";
-import { encryptContent } from "../../../../utils/aes.js";
-import { md5 } from "../../../../utils/md5.js";
-import { encryptKey } from "../../../../utils/rsa.js";
+import MessageManage from "./MessageManage/index.jsx";
 import {
   BOARD_DELETE,
   BOARD_PAGE,
@@ -29,11 +13,11 @@ import {
 } from "../../../../axios/url.js";
 import { useForm } from "antd/es/form/Form.js";
 import { useDispatch, useSelector } from "react-redux";
-import { checkKey } from "../../../../utils/checkKey.js";
 import { getParam } from "../../../../utils/getParam.js";
 import EncryptModal from "../../../common/EncryptModal.jsx";
-import { pagination } from "../../../common/pagination.js";
 import { setMessages } from "../../../../store/messagesSlice.js";
+import "./index.css";
+import ComProTable from "../../../common/ComProTable.jsx";
 
 const TYPES = {
   CREATE: "create",
@@ -79,12 +63,9 @@ function InformationBoardManage(props) {
   const [encryptModalConfirmLoading, setEncryptModalConfirmLoading] =
     useState(false);
   const [saveUri, setSaveUri] = useState("");
-
-  const ref = useRef();
-
-  useEffect(() => {
-    ref.current.reload();
-  }, [reload]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [afterSuccess, setAfterSuccess] = useState(null);
 
   const showPlayModal = (row) => {
     modal.confirm({
@@ -170,6 +151,35 @@ function InformationBoardManage(props) {
     setEncryptModalConfirmLoading(true);
   };
 
+  const batchDelete = () => {
+    if (!selectedRowKeys.length) {
+      api.error({
+        message: `失败`,
+        description: `没有勾选`,
+      });
+      return;
+    }
+
+    const param = getParam(
+      selectedRowKeys,
+      asymmetricCryptographicKey,
+      symmetricEncryptionKey,
+      symmetricEncryptionAlgorithmIV
+    );
+    const { symmetricKeyCiphertext, ciphertext, sign } = param;
+    setCiphertext(ciphertext);
+    setSymmetricKeyCiphertext(symmetricKeyCiphertext);
+    setSign(sign);
+    setSaveUri(BOARD_DELETE);
+
+    setEncryptModalVisible(true);
+    setEncryptModalConfirmLoading(true);
+    setAfterSuccess(() => {
+      setSelectedRowKeys([]);
+      setSelectedRows([]);
+    });
+  };
+
   const showDeleteModal = (row) => {
     modal.confirm({
       title: "刪除",
@@ -248,23 +258,6 @@ function InformationBoardManage(props) {
         >
           删除
         </a>,
-        // <Popconfirm
-        //   title="删除"
-        //   description="你确定删除这条消息吗？"
-        //   onConfirm={() => {
-        //     return singleDelete(row)
-        //       .then(() => {
-        //         return Promise.resolve();
-        //       })
-        //       .catch(() => {
-        //         return Promise.reject();
-        //       });
-        //   }}
-        //   okText="是"
-        //   cancelText="否"
-        // >
-        //   <a>删除</a>
-        // </Popconfirm>,
       ],
     },
   ];
@@ -281,22 +274,30 @@ function InformationBoardManage(props) {
     }
   };
 
+  const toolBarRender = () => {
+    return [
+      <Button onClick={showCreateModal} key={"create"}>
+        新建信息板
+      </Button>,
+      <Button onClick={batchDelete} key={"batchDelete"}>
+        批量删除
+      </Button>,
+    ];
+  };
+
   return (
     <React.Fragment>
       {notificationContextHolder}
-      <ProTable
-        request={getData}
-        actionRef={ref}
+
+      <ComProTable
+        getData={getData}
         reload={reload}
-        rowKey="key"
-        search={false}
-        pagination={pagination}
-        columns={getColumns(columns)}
-        dateFormatter="string"
-        headerTitle="消息板列表"
-        toolBarRender={() => {
-          return [<Button onClick={showCreateModal}>新建信息板</Button>];
-        }}
+        selectedRowKeys={selectedRowKeys}
+        setSelectedRowKeys={setSelectedRowKeys}
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
+        columns={columns}
+        toolBarRender={toolBarRender}
       />
 
       <Modal
@@ -339,6 +340,7 @@ function InformationBoardManage(props) {
         ciphertext={ciphertext}
         sign={sign}
         saveUri={saveUri}
+        afterSuccess={afterSuccess}
       />
 
       {modalContextHolder}

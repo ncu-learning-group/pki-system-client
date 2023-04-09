@@ -17,6 +17,7 @@ function EncryptModal(props) {
     sign,
     onClose,
     saveUri,
+    afterSuccess,
   } = props;
 
   const asymmetricCryptographicAlgorithm = useSelector(
@@ -89,6 +90,9 @@ function EncryptModal(props) {
                   setTimeout(() => {
                     setThirdStepStatus("finish");
                     setStep(2);
+
+                    afterSuccess && afterSuccess();
+
                     resolve();
                   }, 2000);
                 });

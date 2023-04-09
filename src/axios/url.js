@@ -3,6 +3,7 @@ const prefix = "/api";
 export const USER_LOGIN = prefix + "/user/login";
 export const USER_REGISTER = prefix + "/user/regist";
 export const GET_USERNAME = prefix + "/user/getUserName";
+export const USER_LOGOUT = prefix + "/user/logout";
 
 export const GET_PUBLIC_KEY = prefix + "/rsa/getPublicKey";
 export const CHANGE_SECRET_KEY = prefix + "/rsa/changeSecretKey";

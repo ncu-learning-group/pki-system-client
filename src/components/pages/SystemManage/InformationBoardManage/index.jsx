@@ -116,6 +116,11 @@ function InformationBoardManage(props) {
   };
 
   const handleOk = () => {
+    if (!(isAdmin || (board ? userId === board.createdBy : false))) {
+      handleCancel();
+      return;
+    }
+
     const boardName = boardForm.getFieldValue("informationBoardName");
     const object = { boardName };
     if (board) object.id = board.id;
@@ -250,16 +255,16 @@ function InformationBoardManage(props) {
           >
             播放
           </a>,
+          <a
+            onClick={() => {
+              showEditModal(row);
+            }}
+          >
+            编辑
+          </a>,
         ];
         if (isAdmin || userId === row.createdBy) {
           return array.concat([
-            <a
-              onClick={() => {
-                showEditModal(row);
-              }}
-            >
-              编辑
-            </a>,
             <a
               key={"delete"}
               onClick={() => {
@@ -334,10 +339,21 @@ function InformationBoardManage(props) {
               },
             ]}
           >
-            <Input />
+            <Input
+              disabled={
+                !(isAdmin || (board ? userId === board.createdBy : false))
+              }
+            />
           </Form.Item>
         </Form>
-        {type === TYPES.EDIT && <MessageManage board={board} />}
+        {type === TYPES.EDIT && (
+          <MessageManage
+            board={board}
+            disabled={
+              !(isAdmin || (board ? userId === board.createdBy : false))
+            }
+          />
+        )}
       </Modal>
 
       <EncryptModal

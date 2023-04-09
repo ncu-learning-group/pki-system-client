@@ -50,7 +50,7 @@ function MessageManage(props) {
   );
   const hashAlgorithm = useSelector((state) => state.key.hashAlgorithm);
 
-  const { board } = props;
+  const { board, disabled } = props;
 
   const [modal, modalContextHolder] = Modal.useModal();
   const [api, notificationContextHolder] = notification.useNotification();
@@ -218,23 +218,29 @@ function MessageManage(props) {
       width: 180,
       key: "option",
       valueType: "option",
-      render: (text, row) => [
-        <a
-          onClick={() => {
-            showEditModal(row);
-          }}
-        >
-          编辑
-        </a>,
-        <a
-          key={"delete"}
-          onClick={() => {
-            showDeleteModal(row);
-          }}
-        >
-          删除
-        </a>,
-      ],
+      render: (text, row) => {
+        const array = [];
+        if (!disabled) {
+          return array.concat([
+            <a
+              onClick={() => {
+                showEditModal(row);
+              }}
+            >
+              编辑
+            </a>,
+            <a
+              key={"delete"}
+              onClick={() => {
+                showDeleteModal(row);
+              }}
+            >
+              删除
+            </a>,
+          ]);
+        }
+        return array;
+      },
     },
   ];
 
@@ -254,12 +260,15 @@ function MessageManage(props) {
   };
 
   const toolBarRender = () => {
-    return [
-      <Button onClick={showCreateModal}>新建信息</Button>,
-      <Button onClick={batchDelete} key={"batchDelete"}>
-        批量删除
-      </Button>,
-    ];
+    const array = [<Button onClick={showCreateModal}>新建信息</Button>];
+    if (!disabled) {
+      array.push(
+        <Button onClick={batchDelete} key={"batchDelete"}>
+          批量删除
+        </Button>
+      );
+    }
+    return array;
   };
 
   return (

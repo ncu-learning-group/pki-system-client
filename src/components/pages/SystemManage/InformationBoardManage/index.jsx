@@ -116,7 +116,10 @@ function InformationBoardManage(props) {
   };
 
   const handleOk = () => {
-    if (!(isAdmin || (board ? userId === board.createdBy : false))) {
+    if (
+      type === TYPES.EDIT &&
+      !(isAdmin || (board ? userId === board.createdBy : false))
+    ) {
       handleCancel();
       return;
     }
@@ -194,7 +197,7 @@ function InformationBoardManage(props) {
   const showDeleteModal = (row) => {
     modal.confirm({
       title: "刪除",
-      content: `你確定要刪除信息板:${row.id}吗？`,
+      content: `你確定要刪除信息板:${row.boardName}吗？`,
       onOk: () => {
         singleDelete(row);
         return Promise.resolve();
@@ -341,6 +344,7 @@ function InformationBoardManage(props) {
           >
             <Input
               disabled={
+                type === TYPES.EDIT &&
                 !(isAdmin || (board ? userId === board.createdBy : false))
               }
             />
@@ -350,6 +354,7 @@ function InformationBoardManage(props) {
           <MessageManage
             board={board}
             disabled={
+              type === TYPES.EDIT &&
               !(isAdmin || (board ? userId === board.createdBy : false))
             }
           />

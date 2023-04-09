@@ -124,6 +124,7 @@ function InformationBoardManage(props) {
       return;
     }
 
+    setConfirmLoading(true);
     const boardName = boardForm.getFieldValue("informationBoardName");
     const object = { boardName };
     if (board) object.id = board.id;
@@ -141,6 +142,9 @@ function InformationBoardManage(props) {
     setSaveUri(BOARD_SAVE);
     setEncryptModalVisible(true);
     setEncryptModalConfirmLoading(true);
+    setAfterSuccess(() => {
+      setConfirmLoading(false);
+    });
   };
 
   const handleCancel = () => {

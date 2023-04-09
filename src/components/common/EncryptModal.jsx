@@ -135,8 +135,8 @@ function EncryptModal(props) {
           </Button>
         }
         width={800}
-        // forceRender
         closable={false}
+        destroyOnClose
       >
         <Steps
           style={{ padding: "3rem 0" }}

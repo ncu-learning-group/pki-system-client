@@ -163,7 +163,7 @@ function KeyManage(props) {
           >
             <Select placeholder="非对称加密算法" allowClear>
               <Select.Option value="RSA">RSA</Select.Option>
-              <Select.Option value="DSA">DSA</Select.Option>
+              {/*<Select.Option value="DSA">DSA</Select.Option>*/}
             </Select>
           </Form.Item>
         </Form>
@@ -202,7 +202,7 @@ function KeyManage(props) {
           >
             <Select placeholder="对称加密算法" allowClear>
               <Select.Option value="AES">AES</Select.Option>
-              <Select.Option value="DES">DES</Select.Option>
+              {/*<Select.Option value="DES">DES</Select.Option>*/}
             </Select>
           </Form.Item>
           <Form.Item
@@ -243,7 +243,7 @@ function KeyManage(props) {
           >
             <Select placeholder="数字签名算法" allowClear>
               <Select.Option value="MD5">MD5</Select.Option>
-              <Select.Option value="SHA">SHA</Select.Option>
+              {/*<Select.Option value="SHA">SHA</Select.Option>*/}
             </Select>
           </Form.Item>
         </Form>

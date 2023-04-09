@@ -219,11 +219,11 @@ function InformationBoardManage(props) {
       width: 120,
       dataIndex: "boardName",
     },
-    {
-      title: "信息板包含的消息条数",
-      width: 240,
-      dataIndex: "key",
-    },
+    // {
+    //   title: "信息板包含的消息条数",
+    //   width: 240,
+    //   dataIndex: "key",
+    // },
     {
       title: "创建人",
       width: 120,

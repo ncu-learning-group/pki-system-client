@@ -196,7 +196,7 @@ function MessageManage(props) {
     {
       title: "创建人",
       width: 120,
-      dataIndex: "createdBy",
+      dataIndex: "createdUserName",
     },
     {
       title: "创建时间",
@@ -206,7 +206,7 @@ function MessageManage(props) {
     {
       title: "更新人",
       width: 120,
-      dataIndex: "updatedBy",
+      dataIndex: "updatedUserName",
     },
     {
       title: "更新时间",

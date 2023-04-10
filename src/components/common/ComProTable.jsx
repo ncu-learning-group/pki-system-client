@@ -51,7 +51,7 @@ function ComProTable(props) {
       const newKeys = [...new Set(selectedRowKeys.concat(keys))];
       setSelectedRowKeys(newKeys);
       setSelectedRows(
-        selectedRowKeys.concat(keys).filter((item) => {
+        selectedRows.concat(rows).filter((item) => {
           return newKeys.includes(item.id);
         })
       );

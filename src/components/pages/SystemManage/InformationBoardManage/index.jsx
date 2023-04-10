@@ -178,6 +178,17 @@ function InformationBoardManage(props) {
       return;
     }
 
+    for (const row of selectedRows) {
+      const test = userId === row.createdBy;
+      if (!(isAdmin || userId === row.createdBy)) {
+        api.error({
+          message: `失败`,
+          description: `错误：试图删除没有权限删除的信息板`,
+        });
+        return;
+      }
+    }
+
     const param = getParam(
       selectedRowKeys,
       asymmetricCryptographicKey,

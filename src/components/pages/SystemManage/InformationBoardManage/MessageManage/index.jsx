@@ -22,7 +22,7 @@ import {
 import { layout } from "../../../../common/layoutStyle.js";
 import { useSelector } from "react-redux";
 import { checkKey } from "../../../../../utils/checkKey.js";
-import { getParam } from "../../../../../utils/getParam.js";
+import { encryptParam } from "../../../../../utils/encryptParam.js";
 import { useForm } from "antd/es/form/Form.js";
 import EncryptModal from "../../../../common/EncryptModal.jsx";
 import ComProTable from "../../../../common/ComProTable.jsx";
@@ -101,7 +101,7 @@ function MessageManage(props) {
     };
     if (message) object.id = message.id;
 
-    const param = getParam(
+    const param = encryptParam(
       object,
       asymmetricCryptographicKey,
       symmetricEncryptionKey,
@@ -123,7 +123,7 @@ function MessageManage(props) {
   };
 
   const singleDelete = (row) => {
-    const param = getParam(
+    const param = encryptParam(
       [row.id],
       asymmetricCryptographicKey,
       symmetricEncryptionKey,
@@ -148,7 +148,7 @@ function MessageManage(props) {
       return;
     }
 
-    const param = getParam(
+    const param = encryptParam(
       selectedRowKeys,
       asymmetricCryptographicKey,
       symmetricEncryptionKey,

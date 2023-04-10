@@ -61,10 +61,9 @@ function KeyManage(props) {
 
   const [api, contextHolder] = notification.useNotification();
 
-  // 初始化非对称密钥和对称密钥
   useEffect(() => {
     form2.setFieldsValue({ symmetricEncryptionKey });
-  }, []);
+  }, [symmetricEncryptionKey]);
 
   // 要求后端重新生成RSA公钥密钥
   const regenerateAsymmetricCryptographicKey = () => {

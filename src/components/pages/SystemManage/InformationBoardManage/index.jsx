@@ -13,11 +13,13 @@ import {
 } from "../../../../axios/url.js";
 import { useForm } from "antd/es/form/Form.js";
 import { useDispatch, useSelector } from "react-redux";
-import { getParam } from "../../../../utils/getParam.js";
+import { encryptParam } from "../../../../utils/encryptParam.js";
 import EncryptModal from "../../../common/EncryptModal.jsx";
 import { setMessages } from "../../../../store/messagesSlice.js";
 import "./index.css";
 import ComProTable from "../../../common/ComProTable.jsx";
+import { decryptResponse } from "../../../../utils/decryptResponse.js";
+import { decryptKey } from "../../../../utils/rsa.js";
 
 const TYPES = {
   CREATE: "create",
@@ -128,7 +130,7 @@ function InformationBoardManage(props) {
     const boardName = boardForm.getFieldValue("informationBoardName");
     const object = { boardName };
     if (board) object.id = board.id;
-    const param = getParam(
+    const param = encryptParam(
       object,
       asymmetricCryptographicKey,
       symmetricEncryptionKey,
@@ -153,7 +155,7 @@ function InformationBoardManage(props) {
   };
 
   const singleDelete = (row) => {
-    const param = getParam(
+    const param = encryptParam(
       [row.id],
       asymmetricCryptographicKey,
       symmetricEncryptionKey,
@@ -189,7 +191,7 @@ function InformationBoardManage(props) {
       }
     }
 
-    const param = getParam(
+    const param = encryptParam(
       selectedRowKeys,
       asymmetricCryptographicKey,
       symmetricEncryptionKey,
@@ -300,7 +302,22 @@ function InformationBoardManage(props) {
 
   const getData = async (params) => {
     const { current, pageSize } = params;
-    const res = await get(BOARD_PAGE, { index: current, size: pageSize });
+    let originalRes = await get(BOARD_PAGE, {
+      index: current,
+      size: pageSize,
+    });
+
+    const symmetricEncryptionKey = decryptKey(
+      originalRes.symmetricKeyCiphertext,
+      asymmetricCryptographicKey
+    );
+    const res = decryptResponse(
+      originalRes.ciphertext,
+      asymmetricCryptographicKey,
+      symmetricEncryptionKey,
+      symmetricEncryptionAlgorithmIV
+    );
+    debugger;
     if (res.message === "success") {
       return {
         data: res.data.content,

@@ -307,17 +307,17 @@ function InformationBoardManage(props) {
       size: pageSize,
     });
 
-    const symmetricEncryptionKey = decryptKey(
+    const key = decryptKey(
       originalRes.symmetricKeyCiphertext,
       asymmetricCryptographicKey
     );
+    debugger;
     const res = decryptResponse(
       originalRes.ciphertext,
       asymmetricCryptographicKey,
-      symmetricEncryptionKey,
+      key,
       symmetricEncryptionAlgorithmIV
     );
-    debugger;
     if (res.message === "success") {
       return {
         data: res.data.content,

@@ -18,15 +18,11 @@ export const encryptContent = (message, key, iv) => {
 
 // 对称加密：解密文本
 export const decryptContent = (message, key, iv) => {
-  return CryptoJS.AES.decrypt(
-    CryptoJS.enc.Base64.stringify(CryptoJS.enc.Hex.parse(message)),
-    CryptoJS.enc.Utf8.parse(key),
-    {
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.NoPadding,
-      iv: CryptoJS.enc.Utf8.parse(iv),
-    }
-  ).toString(CryptoJS.enc.Utf8);
+  return CryptoJS.AES.decrypt(message, CryptoJS.enc.Utf8.parse(key), {
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.NoPadding,
+    iv: CryptoJS.enc.Utf8.parse(iv),
+  }).toString(CryptoJS.enc.Utf8);
 };
 
 // 重新随机生成AES密钥

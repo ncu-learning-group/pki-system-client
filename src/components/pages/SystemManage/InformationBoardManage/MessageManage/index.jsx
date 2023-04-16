@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from "antd";
 import { getColumns } from "../../../../common/getColumns.jsx";
-import { get, post } from "../../../../../axios/index.jsx";
+import { get, post, postFile } from "../../../../../axios/index.jsx";
 import moment from "moment/moment.js";
 import {
   BOARD_DELETE,
@@ -26,6 +26,7 @@ import { getParam } from "../../../../../utils/getParam.js";
 import { useForm } from "antd/es/form/Form.js";
 import EncryptModal from "../../../../common/EncryptModal.jsx";
 import ComProTable from "../../../../common/ComProTable.jsx";
+import ComUpload from "../../../../common/ComUpload.jsx";
 
 const TYPES = {
   CREATE: "create",
@@ -68,6 +69,8 @@ function MessageManage(props) {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [afterSuccess, setAfterSuccess] = useState(null);
+  const [fileList, setFileList] = useState([]);
+  const [informationBoardType, setInformationBoardType] = useState("PICTURE"); //PICTURE
 
   const [encryptModalVisible, setEncryptModalVisible] = useState(false);
   const [encryptModalConfirmLoading, setEncryptModalConfirmLoading] =
@@ -77,44 +80,100 @@ function MessageManage(props) {
   const showCreateModal = () => {
     setType(TYPES.CREATE);
     setMessage(null);
-    messageForm.setFieldsValue({ messageContent: null });
+    if (informationBoardType === "TEXT")
+      messageForm.setFieldsValue({ messageContent: null });
+    else {
+      setFileList([
+        {
+          uid: "-1",
+          name: "xxx.png",
+          status: "done",
+          url: "http://www.baidu.com/xxx.png",
+        },
+      ]);
+    }
     setEditVisible(true);
   };
 
   const showEditModal = (row) => {
     setType(TYPES.EDIT);
     setMessage(row);
-    messageForm.setFieldsValue({ messageContent: row.message });
+    if (informationBoardType === "TEXT")
+      messageForm.setFieldsValue({ messageContent: row.message });
+    else {
+      setFileList([
+        {
+          uid: "-1",
+          name: "xxx.png",
+          status: "done",
+          url: "http://www.baidu.com/xxx.png",
+        },
+      ]);
+    }
     setEditVisible(true);
   };
 
   const handleOk = async () => {
-    const messageContent = await messageForm.validateFields().catch(() => {
-      api.error({
-        message: "错误",
-        description: "消息的输入有问题",
+    if (informationBoardType === "TEXT") {
+      const messageContent = await messageForm.validateFields().catch(() => {
+        api.error({
+          message: "错误",
+          description: "消息的输入有问题",
+        });
       });
-    });
-    const object = {
-      message: messageContent.messageContent,
-      boardId: board.id,
-    };
-    if (message) object.id = message.id;
+      const object = {
+        message: messageContent.messageContent,
+        boardId: board.id,
+      };
+      if (message) object.id = message.id;
 
-    const param = getParam(
-      object,
-      asymmetricCryptographicKey,
-      symmetricEncryptionKey,
-      symmetricEncryptionAlgorithmIV
-    );
-    const { symmetricKeyCiphertext, ciphertext, sign } = param;
-    setCiphertext(ciphertext);
-    setSymmetricKeyCiphertext(symmetricKeyCiphertext);
-    setSign(sign);
-    setSaveUri(MESSAGE_SAVE);
+      const param = getParam(
+        object,
+        asymmetricCryptographicKey,
+        symmetricEncryptionKey,
+        symmetricEncryptionAlgorithmIV
+      );
+      const { symmetricKeyCiphertext, ciphertext, sign } = param;
+      setCiphertext(ciphertext);
+      setSymmetricKeyCiphertext(symmetricKeyCiphertext);
+      setSign(sign);
+      setSaveUri(MESSAGE_SAVE);
 
-    setEncryptModalVisible(true);
-    setEncryptModalConfirmLoading(true);
+      setEncryptModalVisible(true);
+      setEncryptModalConfirmLoading(true);
+    } else {
+      const formData = new FormData();
+      const [file] = fileList;
+      if (file) {
+        formData.append("file", file.originFileObj);
+      }
+      setConfirmLoading(true);
+
+      getUploadData(formData)
+        .then((res) => {
+          if (res.success) {
+            setEditVisible(false);
+            api.info({
+              message: "提示",
+              description: "导入中,请勿关闭弹窗!",
+            });
+          } else {
+            api.error({
+              message: "错误",
+              description: res.message || "操作失败",
+            });
+          }
+        })
+        .catch((error) => {
+          api.error({
+            message: "错误",
+            description: "操作失败",
+          });
+        })
+        .finally(() => {
+          setConfirmLoading(false);
+        });
+    }
   };
 
   const handleCancel = () => {
@@ -271,6 +330,14 @@ function MessageManage(props) {
     return array;
   };
 
+  // https://www.mocky.io/v2/5cc8019d300000980a055e76
+  const getUploadData = (formData) => {
+    return postFile(
+      "https://www.mocky.io/v2/5cc8019d300000980a055e76",
+      formData
+    );
+  };
+
   return (
     <React.Fragment>
       {notificationContextHolder}
@@ -293,26 +360,29 @@ function MessageManage(props) {
         onCancel={handleCancel}
         okText={"确定"}
         cancelText={"取消"}
-        width={1500}
+        width={informationBoardType === "TEXT" ? 1500 : 500}
       >
-        <Form form={messageForm} {...layout} style={{ marginTop: "3rem" }}>
-          <Form.Item
-            name="messageContent"
-            label="消息内容"
-            rules={[
-              {
-                required: true,
-              },
-              {
-                type: "string",
-                max: 32,
-                message: "消息的最大长度为32",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-        </Form>
+        {informationBoardType === "TEXT" ? (
+          <Form form={messageForm} {...layout} style={{ marginTop: "3rem" }}>
+            <Form.Item
+              name="messageContent"
+              label="消息内容"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+          </Form>
+        ) : (
+          <ComUpload
+            getUploadData={getUploadData}
+            fileList={fileList}
+            setFileList={setFileList}
+          />
+        )}
       </Modal>
 
       <EncryptModal

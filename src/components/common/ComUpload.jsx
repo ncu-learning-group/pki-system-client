@@ -1,52 +1,42 @@
 import React, { Fragment } from "react";
-import { Modal, notification, Upload } from "antd";
+import { Button, Modal, notification, Upload } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 
 function ComUpload(props) {
-  const { fileList, getUploadData } = props;
+  const { fileList, setFileList } = props;
 
   const [modal, modalContextHolder] = Modal.useModal();
   const [api, notificationContextHolder] = notification.useNotification();
 
-  const importSubmit = () => {
-    const formData = new FormData();
-    const [file] = fileList;
+  // const importSubmit = () => {
+  //   const formData = new FormData();
+  //   const [file] = fileList;
+  //
+  //   if (file) {
+  //     formData.append("file", file.originFileObj);
+  //   }
+  // };
 
-    if (file) {
-      formData.append("file", file.originFileObj);
-    }
+  const beforeUpload = (file) => {
+    setFileList([file]);
+    return false;
+  };
 
-    getUploadData(formData)
-      .then((res) => {
-        console.log("getUploadDataRes", res);
-        if (res.success) {
-          api.info({
-            message: "提示",
-            description: "导入中,请勿关闭弹窗!",
-          });
-
-          // setStatus("active");
-        } else {
-          api.error({
-            message: "错误",
-            description: res.message || "操作失败",
-          });
-        }
-      })
-      .catch((error) => {
-        api.error({
-          message: "错误",
-          description: "操作失败",
-        });
-      })
-      .finally(() => {
-        // setConfirmLoading(false);
-      });
+  const onRemove = (file) => {
+    setFileList([]);
   };
 
   return (
     <Fragment>
       {modalContextHolder}
-      <Upload fileList={fileList} maxCount={1} customRequest={importSubmit} />
+      <Upload
+        fileList={fileList}
+        maxCount={1}
+        beforeUpload={beforeUpload}
+        onRemove={onRemove}
+      >
+        <Button icon={<UploadOutlined />}>选择文件</Button>
+      </Upload>
       {notificationContextHolder}
     </Fragment>
   );

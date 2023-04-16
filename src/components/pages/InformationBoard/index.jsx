@@ -22,6 +22,9 @@ function InformationBoard(props) {
   const [api, contextHolder] = notification.useNotification();
 
   const messages = useSelector((state) => state.message.messages);
+  const informationBoardType = useSelector(
+    (state) => state.message.informationBoardType
+  );
   const [speed, setSpeed] = useState(300);
 
   // ******************文字滚动******************************
@@ -71,102 +74,107 @@ function InformationBoard(props) {
   return (
     <React.Fragment>
       {contextHolder}
-      <Card
-        title="文字滚动"
-        style={{ margin: "10px" }}
-        extra={
-          <>
-            <SettingOutlined
-              onClick={() => {
-                setTextSetting(!textSetting);
-              }}
-            />
-          </>
-        }
-      >
-        {!textSetting ? (
-          messages.length ? (
-            <>
-              {messages.map((value, index, array) => {
-                return (
-                  <KeyFrame
-                    key={index}
-                    id={index}
-                    content={value}
-                    speed={speed}
-                  />
-                );
-              })}
-            </>
-          ) : (
-            <Result
-              status="warning"
-              title="代码正常运行，但是信息板是空的，所以啥也没有"
-            />
-          )
-        ) : (
-          <Form form={form1} {...layout}>
-            <Form.Item
-              name="playSpeed"
-              label="动画播放速度"
-              rules={[
-                {
-                  required: true,
-                  message: "动画播放速度不能为空",
-                },
-              ]}
-            >
-              <Slider min={300} max={3000} step={50} />
-            </Form.Item>
-            <Form.Item {...tailLayout}>
-              <Button type={"primary"} onClick={saveTextSetting}>
-                保存设置
-              </Button>
-            </Form.Item>
-          </Form>
-        )}
-      </Card>
 
-      <Card title="图片滚动" style={{ margin: "10px" }}>
-        {!imageSetting ? (
-          messages.length ? (
-            <Carousel autoplay>
-              {messages.map((message) => {
-                return (
-                  <div>
-                    <div style={contentStyle}>{message}</div>
-                  </div>
-                );
-              })}
-            </Carousel>
+      {informationBoardType !== "PICTURE" && (
+        <Card
+          title="文字滚动"
+          style={{ margin: "10px" }}
+          extra={
+            <>
+              <SettingOutlined
+                onClick={() => {
+                  setTextSetting(!textSetting);
+                }}
+              />
+            </>
+          }
+        >
+          {!textSetting ? (
+            messages.length ? (
+              <>
+                {messages.map((value, index, array) => {
+                  return (
+                    <KeyFrame
+                      key={index}
+                      id={index}
+                      content={value}
+                      speed={speed}
+                    />
+                  );
+                })}
+              </>
+            ) : (
+              <Result
+                status="warning"
+                title="代码正常运行，但是信息板是空的，所以啥也没有"
+              />
+            )
           ) : (
-            <Result
-              status="warning"
-              title="代码正常运行，但是信息板是空的，所以啥也没有"
-            />
-          )
-        ) : (
-          <Form form={form2} {...layout}>
-            <Form.Item
-              name="playSpeed"
-              label="动画播放速度"
-              rules={[
-                {
-                  required: true,
-                  message: "动画播放速度不能为空",
-                },
-              ]}
-            >
-              <Slider min={1} max={10} />
-            </Form.Item>
-            <Form.Item {...tailLayout}>
-              <Button type={"primary"} onClick={saveImageSetting}>
-                保存设置
-              </Button>
-            </Form.Item>
-          </Form>
-        )}
-      </Card>
+            <Form form={form1} {...layout}>
+              <Form.Item
+                name="playSpeed"
+                label="动画播放速度"
+                rules={[
+                  {
+                    required: true,
+                    message: "动画播放速度不能为空",
+                  },
+                ]}
+              >
+                <Slider min={300} max={3000} step={50} />
+              </Form.Item>
+              <Form.Item {...tailLayout}>
+                <Button type={"primary"} onClick={saveTextSetting}>
+                  保存设置
+                </Button>
+              </Form.Item>
+            </Form>
+          )}
+        </Card>
+      )}
+
+      {informationBoardType !== "TEXT" && (
+        <Card title="图片滚动" style={{ margin: "10px" }}>
+          {!imageSetting ? (
+            messages.length ? (
+              <Carousel autoplay>
+                {messages.map((message) => {
+                  return (
+                    <div>
+                      <div style={contentStyle}>{message}</div>
+                    </div>
+                  );
+                })}
+              </Carousel>
+            ) : (
+              <Result
+                status="warning"
+                title="代码正常运行，但是信息板是空的，所以啥也没有"
+              />
+            )
+          ) : (
+            <Form form={form2} {...layout}>
+              <Form.Item
+                name="playSpeed"
+                label="动画播放速度"
+                rules={[
+                  {
+                    required: true,
+                    message: "动画播放速度不能为空",
+                  },
+                ]}
+              >
+                <Slider min={1} max={10} />
+              </Form.Item>
+              <Form.Item {...tailLayout}>
+                <Button type={"primary"} onClick={saveImageSetting}>
+                  保存设置
+                </Button>
+              </Form.Item>
+            </Form>
+          )}
+        </Card>
+      )}
 
       {/*<Card title="信息板列表" style={{ margin: "15px" }}>*/}
       {/*  <InformationBoardManage setMessages={setMessages} />*/}

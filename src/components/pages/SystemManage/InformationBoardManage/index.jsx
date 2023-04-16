@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Form, Input, Modal, notification } from "antd";
+import { Button, Form, Input, Modal, notification, Select } from "antd";
 import { get, post } from "../../../../axios/index.jsx";
 import { layout, tailLayout } from "../../../common/layoutStyle.js";
 import MessageManage from "./MessageManage/index.jsx";
@@ -15,7 +15,10 @@ import { useForm } from "antd/es/form/Form.js";
 import { useDispatch, useSelector } from "react-redux";
 import { getParam } from "../../../../utils/getParam.js";
 import EncryptModal from "../../../common/EncryptModal.jsx";
-import { setMessages } from "../../../../store/messagesSlice.js";
+import {
+  setInformationBoardType,
+  setMessages,
+} from "../../../../store/messagesSlice.js";
 import "./index.css";
 import ComProTable from "../../../common/ComProTable.jsx";
 
@@ -23,6 +26,11 @@ const TYPES = {
   CREATE: "create",
   EDIT: "edit",
 };
+
+const options = [
+  { label: "文字信息板", value: "TEXT" },
+  { label: "图片信息板", value: "PICTURE" },
+];
 
 function InformationBoardManage(props) {
   const asymmetricCryptographicAlgorithm = useSelector(
@@ -76,10 +84,8 @@ function InformationBoardManage(props) {
       title: "播放",
       content: `是否要播放信息板：${row.boardName}`,
       onOk: () => {
+        setInformationBoardType(row.informationBoardType);
         get(MESSAGE_PAGE, { boardId: row.id }).then((res) => {
-          const test = res.data.content.map((item) => {
-            return item.message;
-          });
           if (res.code === "SUCCESS") {
             dispatch(
               setMessages(
@@ -346,6 +352,7 @@ function InformationBoardManage(props) {
         onCancel={handleCancel}
         width={1500}
         destroyOnClose
+        maskClosable={false}
       >
         <Form form={boardForm} {...layout} style={{ marginTop: "3rem" }}>
           <Form.Item
@@ -364,6 +371,18 @@ function InformationBoardManage(props) {
                 !(isAdmin || (board ? userId === board.createdBy : false))
               }
             />
+          </Form.Item>
+          <Form.Item
+            name="informationBoardType"
+            label="信息板类型"
+            rules={[
+              {
+                required: true,
+                message: "信息板类型不能为空",
+              },
+            ]}
+          >
+            <Select options={options} disabled={type === TYPES.EDIT} />
           </Form.Item>
         </Form>
         {type === TYPES.EDIT && (

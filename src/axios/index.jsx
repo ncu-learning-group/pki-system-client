@@ -110,3 +110,13 @@ export function post(url, data, custConfig = {}) {
   const comb = { ...config, ...custConfig };
   return axios.post(url, data, comb);
 }
+
+export function postFile(url, formData, customConfig) {
+  return axios.post(url, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      "Access-Control-Allow-Origin": "*",
+    },
+    ...customConfig,
+  });
+}

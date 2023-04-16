@@ -110,14 +110,20 @@ function InformationBoardManage(props) {
   const showCreateModal = () => {
     setType(TYPES.CREATE);
     setBoard(null);
-    boardForm.setFieldsValue({ informationBoardName: null });
+    boardForm.setFieldsValue({
+      informationBoardName: null,
+      informationBoardType: null,
+    });
     setEditVisible(true);
   };
 
   const showEditModal = (row) => {
     setType(TYPES.EDIT);
     setBoard(row);
-    boardForm.setFieldsValue({ informationBoardName: row.boardName });
+    boardForm.setFieldsValue({
+      informationBoardName: row.boardName,
+      informationBoardType: row.boardType,
+    });
     setEditVisible(true);
   };
 
@@ -131,25 +137,29 @@ function InformationBoardManage(props) {
     }
 
     setConfirmLoading(true);
-    const boardName = boardForm.getFieldValue("informationBoardName");
-    const object = { boardName };
-    if (board) object.id = board.id;
-    const param = getParam(
-      object,
-      asymmetricCryptographicKey,
-      symmetricEncryptionKey,
-      symmetricEncryptionAlgorithmIV
-    );
-    const { symmetricKeyCiphertext, ciphertext, sign } = param;
-    setCiphertext(ciphertext);
-    setSymmetricKeyCiphertext(symmetricKeyCiphertext);
-    setSign(sign);
+    boardForm.validateFields().then((res) => {
+      const object = {
+        ...res,
+        boardType: res.informationBoardType === "TEXT" ? 1 : 2,
+      };
+      if (board) object.id = board.id;
+      const param = getParam(
+        object,
+        asymmetricCryptographicKey,
+        symmetricEncryptionKey,
+        symmetricEncryptionAlgorithmIV
+      );
+      const { symmetricKeyCiphertext, ciphertext, sign } = param;
+      setCiphertext(ciphertext);
+      setSymmetricKeyCiphertext(symmetricKeyCiphertext);
+      setSign(sign);
 
-    setSaveUri(BOARD_SAVE);
-    setEncryptModalVisible(true);
-    setEncryptModalConfirmLoading(true);
-    setAfterSuccess(() => {
-      setConfirmLoading(false);
+      setSaveUri(BOARD_SAVE);
+      setEncryptModalVisible(true);
+      setEncryptModalConfirmLoading(true);
+      setAfterSuccess(() => {
+        setConfirmLoading(false);
+      });
     });
   };
 

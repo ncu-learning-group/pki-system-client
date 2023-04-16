@@ -30,6 +30,7 @@ function ComUpload(props) {
     <Fragment>
       {modalContextHolder}
       <Upload
+        accept={"image/png, image/jpeg"}
         fileList={fileList}
         maxCount={1}
         beforeUpload={beforeUpload}

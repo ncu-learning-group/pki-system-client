@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { ProTable } from "@ant-design/pro-components";
 import {
   Button,
@@ -17,6 +17,7 @@ import {
   BOARD_SAVE,
   MESSAGE_DELETE,
   MESSAGE_PAGE,
+  MESSAGE_PAGE_IMAGE,
   MESSAGE_SAVE,
   MESSAGE_SAVE_IMAGE,
 } from "../../../../../axios/url.js";
@@ -53,6 +54,7 @@ function MessageManage(props) {
   const hashAlgorithm = useSelector((state) => state.key.hashAlgorithm);
 
   const { board, disabled } = props;
+  const informationBoardType = board.boardType === "1" ? "TEXT" : "PICTURE";
 
   const [modal, modalContextHolder] = Modal.useModal();
   const [api, notificationContextHolder] = notification.useNotification();
@@ -71,7 +73,6 @@ function MessageManage(props) {
   const [selectedRows, setSelectedRows] = useState([]);
   const [afterSuccess, setAfterSuccess] = useState(null);
   const [fileList, setFileList] = useState([]);
-  const [informationBoardType, setInformationBoardType] = useState("PICTURE"); //PICTURE
 
   const [encryptModalVisible, setEncryptModalVisible] = useState(false);
   const [encryptModalConfirmLoading, setEncryptModalConfirmLoading] =
@@ -84,14 +85,14 @@ function MessageManage(props) {
     if (informationBoardType === "TEXT")
       messageForm.setFieldsValue({ messageContent: null });
     else {
-      setFileList([
-        {
-          uid: "-1",
-          name: "xxx.png",
-          status: "done",
-          url: "http://www.baidu.com/xxx.png",
-        },
-      ]);
+      // setFileList([
+      //   {
+      //     uid: "-1",
+      //     name: "xxx.png",
+      //     status: "done",
+      //     url: "http://www.baidu.com/xxx.png",
+      //   },
+      // ]);
     }
     setEditVisible(true);
   };
@@ -102,28 +103,37 @@ function MessageManage(props) {
     if (informationBoardType === "TEXT")
       messageForm.setFieldsValue({ messageContent: row.message });
     else {
-      setFileList([
-        {
-          uid: "-1",
-          name: "xxx.png",
-          status: "done",
-          url: "http://www.baidu.com/xxx.png",
-        },
-      ]);
+      // setFileList([
+      //   {
+      //     uid: "-1",
+      //     name: "xxx.png",
+      //     status: "done",
+      //     url: "http://www.baidu.com/xxx.png",
+      //   },
+      // ]);
     }
     setEditVisible(true);
   };
 
   const handleOk = async () => {
-    if (informationBoardType === "TEXT") {
-      const messageContent = await messageForm.validateFields().catch(() => {
+    const res = await messageForm
+      .validateFields()
+      .then((res) => {
+        api.info({
+          message: "提示",
+          description: "导入中,请勿关闭弹窗!",
+        });
+        return res;
+      })
+      .catch(() => {
         api.error({
           message: "错误",
           description: "消息的输入有问题",
         });
       });
+    if (informationBoardType === "TEXT") {
       const object = {
-        message: messageContent.messageContent,
+        message: res.messageContent,
         boardId: board.id,
       };
       if (message) object.id = message.id;
@@ -149,19 +159,21 @@ function MessageManage(props) {
         formData.append("file", file);
       }
       formData.append("boardId", board.id);
+      formData.append("messageName", res.messageName);
       setConfirmLoading(true);
 
       getUploadData(formData)
         .then((res) => {
-          if (res.success) {
+          if (res.code === "SUCCESS") {
             setEditVisible(false);
-            api.info({
-              message: "提示",
-              description: "导入中,请勿关闭弹窗!",
+            setReload(!reload);
+            api.success({
+              message: "成功",
+              description: "导入成功!",
             });
           } else {
             api.error({
-              message: "错误",
+              message: "失败",
               description: res.message || "操作失败",
             });
           }
@@ -249,11 +261,17 @@ function MessageManage(props) {
       width: 80,
       render: (text, row, index) => index + 1,
     },
-    {
-      title: "消息内容",
-      width: 240,
-      dataIndex: "message",
-    },
+    informationBoardType === "TEXT"
+      ? {
+          title: "消息内容",
+          width: 240,
+          dataIndex: "message",
+        }
+      : {
+          title: "消息名称",
+          width: 240,
+          dataIndex: "messageName",
+        },
     {
       title: "创建人",
       width: 120,
@@ -307,11 +325,14 @@ function MessageManage(props) {
 
   const getData = async (params) => {
     const { current, pageSize } = params;
-    const res = await get(MESSAGE_PAGE, {
-      index: current,
-      size: pageSize,
-      boardId: board.id,
-    });
+    const res = await get(
+      informationBoardType === "TEXT" ? MESSAGE_PAGE : MESSAGE_PAGE_IMAGE,
+      {
+        index: current,
+        size: pageSize,
+        boardId: board.id,
+      }
+    );
     if (res.message === "success") {
       return {
         data: res.data.content,
@@ -321,10 +342,14 @@ function MessageManage(props) {
   };
 
   const toolBarRender = () => {
-    const array = [<Button onClick={showCreateModal}>新建信息</Button>];
+    const array = [
+      <Button type={"primary"} onClick={showCreateModal}>
+        新建信息
+      </Button>,
+    ];
     if (!disabled) {
       array.push(
-        <Button onClick={batchDelete} key={"batchDelete"}>
+        <Button danger onClick={batchDelete} key={"batchDelete"}>
           批量删除
         </Button>
       );
@@ -360,9 +385,12 @@ function MessageManage(props) {
         okText={"确定"}
         cancelText={"取消"}
         width={informationBoardType === "TEXT" ? 1500 : 500}
+        maskClosable={false}
+        destroyOnClose
       >
-        {informationBoardType === "TEXT" ? (
-          <Form form={messageForm} {...layout} style={{ marginTop: "3rem" }}>
+        <Form form={messageForm} {...layout} style={{ marginTop: "3rem" }}>
+          {/*创建图片消息和文字消息的区别*/}
+          {informationBoardType === "TEXT" ? (
             <Form.Item
               name="messageContent"
               label="消息内容"
@@ -374,14 +402,29 @@ function MessageManage(props) {
             >
               <Input />
             </Form.Item>
-          </Form>
-        ) : (
-          <ComUpload
-            getUploadData={getUploadData}
-            fileList={fileList}
-            setFileList={setFileList}
-          />
-        )}
+          ) : (
+            <Fragment>
+              <Form.Item
+                name="messageName"
+                label="消息名称"
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item name="fileList" label="图片">
+                <ComUpload
+                  getUploadData={getUploadData}
+                  fileList={fileList}
+                  setFileList={setFileList}
+                />
+              </Form.Item>
+            </Fragment>
+          )}
+        </Form>
       </Modal>
 
       <EncryptModal

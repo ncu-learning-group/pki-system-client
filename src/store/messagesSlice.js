@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export const messagesSlice = createSlice({
-  name: "login",
+  name: "message",
   initialState: {
     messages: ["Sample1", "Sample2"],
     informationBoardType: "ALL",

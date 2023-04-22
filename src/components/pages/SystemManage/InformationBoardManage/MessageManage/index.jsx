@@ -148,6 +148,7 @@ function MessageManage(props) {
       if (file) {
         formData.append("file", file);
       }
+      formData.append("boardId", board.id);
       setConfirmLoading(true);
 
       getUploadData(formData)

@@ -13,6 +13,7 @@ export const BOARD_SAVE = prefix + "/board/save";
 export const BOARD_DELETE = prefix + "/board/delete";
 export const MESSAGE_PAGE = prefix + "/boardMessage/page";
 export const MESSAGE_SAVE = prefix + "/boardMessage/save";
+export const MESSAGE_SAVE_IMAGE = prefix + "/boardMessage/saveImage";
 export const MESSAGE_DELETE = prefix + "/boardMessage/delete";
 
 export const USER_PAGE = prefix + "/managerUser/page";

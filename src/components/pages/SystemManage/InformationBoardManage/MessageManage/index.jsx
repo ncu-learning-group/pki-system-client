@@ -18,6 +18,7 @@ import {
   MESSAGE_DELETE,
   MESSAGE_PAGE,
   MESSAGE_SAVE,
+  MESSAGE_SAVE_IMAGE,
 } from "../../../../../axios/url.js";
 import { layout } from "../../../../common/layoutStyle.js";
 import { useSelector } from "react-redux";
@@ -145,7 +146,7 @@ function MessageManage(props) {
       const formData = new FormData();
       const [file] = fileList;
       if (file) {
-        formData.append("file", file.originFileObj);
+        formData.append("file", file);
       }
       setConfirmLoading(true);
 
@@ -332,10 +333,7 @@ function MessageManage(props) {
 
   // https://www.mocky.io/v2/5cc8019d300000980a055e76
   const getUploadData = (formData) => {
-    return postFile(
-      "https://www.mocky.io/v2/5cc8019d300000980a055e76",
-      formData
-    );
+    return postFile(MESSAGE_SAVE_IMAGE, formData);
   };
 
   return (

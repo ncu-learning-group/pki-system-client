@@ -122,7 +122,7 @@ function InformationBoardManage(props) {
     setBoard(row);
     boardForm.setFieldsValue({
       informationBoardName: row.boardName,
-      informationBoardType: row.boardType,
+      informationBoardType: row.boardType === "1" ? "TEXT" : "PICTURE",
     });
     setEditVisible(true);
   };
@@ -139,7 +139,7 @@ function InformationBoardManage(props) {
     setConfirmLoading(true);
     boardForm.validateFields().then((res) => {
       const object = {
-        ...res,
+        boardName: res.informationBoardName,
         boardType: res.informationBoardType === "TEXT" ? 1 : 2,
       };
       if (board) object.id = board.id;
@@ -328,7 +328,7 @@ function InformationBoardManage(props) {
 
   const toolBarRender = () => {
     return [
-      <Button onClick={showCreateModal} key={"create"}>
+      <Button onClick={showCreateModal} key={"create"} type={"primary"}>
         新建信息板
       </Button>,
       <Button onClick={batchDelete} key={"batchDelete"}>

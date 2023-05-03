@@ -160,6 +160,7 @@ function MessageManage(props) {
       }
       formData.append("boardId", board.id);
       formData.append("messageName", res.messageName);
+      if (message) formData.append("id", message.id);
       setConfirmLoading(true);
 
       getUploadData(formData)

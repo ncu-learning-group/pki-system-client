@@ -4,6 +4,7 @@ import {
   Card,
   Carousel,
   Form,
+  Image,
   notification,
   Result,
   Slider,
@@ -176,9 +177,7 @@ function InformationBoard(props) {
         </Card>
       )}
 
-      {/*<Card title="信息板列表" style={{ margin: "15px" }}>*/}
-      {/*  <InformationBoardManage setMessages={setMessages} />*/}
-      {/*</Card>*/}
+      <Image src="http://localhost:8080/images/4028b88187e0e26e0187e14dab530007.jpg" />
     </React.Fragment>
   );
 }

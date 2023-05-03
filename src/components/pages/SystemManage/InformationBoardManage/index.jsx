@@ -7,7 +7,7 @@ import {
   BOARD_DELETE,
   BOARD_PAGE,
   BOARD_SAVE,
-  MESSAGE_DELETE,
+  MESSAGE_DELETE_TEXT,
   MESSAGE_PAGE,
   SEND,
 } from "../../../../axios/url.js";

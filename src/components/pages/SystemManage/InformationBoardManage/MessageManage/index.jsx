@@ -15,11 +15,12 @@ import moment from "moment/moment.js";
 import {
   BOARD_DELETE,
   BOARD_SAVE,
-  MESSAGE_DELETE,
+  MESSAGE_DELETE_TEXT,
   MESSAGE_PAGE,
   MESSAGE_PAGE_IMAGE,
-  MESSAGE_SAVE,
+  MESSAGE_SAVE_TEXT,
   MESSAGE_SAVE_IMAGE,
+  MESSAGE_DELETE_IMAGE,
 } from "../../../../../axios/url.js";
 import { layout } from "../../../../common/layoutStyle.js";
 import { useSelector } from "react-redux";
@@ -78,6 +79,11 @@ function MessageManage(props) {
   const [encryptModalConfirmLoading, setEncryptModalConfirmLoading] =
     useState(false);
   const [saveUri, setSaveUri] = useState("");
+
+  useEffect(() => {
+    messageForm.resetFields();
+    setFileList([]);
+  }, [encryptModalVisible]);
 
   const showCreateModal = () => {
     setType(TYPES.CREATE);
@@ -148,7 +154,7 @@ function MessageManage(props) {
       setCiphertext(ciphertext);
       setSymmetricKeyCiphertext(symmetricKeyCiphertext);
       setSign(sign);
-      setSaveUri(MESSAGE_SAVE);
+      setSaveUri(MESSAGE_SAVE_TEXT);
 
       setEncryptModalVisible(true);
       setEncryptModalConfirmLoading(true);
@@ -179,6 +185,10 @@ function MessageManage(props) {
             });
           }
         })
+        .then(() => {
+          messageForm.resetFields();
+          setFileList([]);
+        })
         .catch((error) => {
           api.error({
             message: "错误",
@@ -192,7 +202,7 @@ function MessageManage(props) {
   };
 
   const handleCancel = () => {
-    messageForm.resetFields(["messageContent"]);
+    messageForm.resetFields();
     setEditVisible(false);
   };
 
@@ -207,10 +217,14 @@ function MessageManage(props) {
     setCiphertext(ciphertext);
     setSymmetricKeyCiphertext(symmetricKeyCiphertext);
     setSign(sign);
-    setSaveUri(MESSAGE_DELETE);
 
     setEncryptModalVisible(true);
     setEncryptModalConfirmLoading(true);
+    if (informationBoardType === "TEXT") {
+      setSaveUri(MESSAGE_DELETE_TEXT);
+    } else {
+      setSaveUri(MESSAGE_DELETE_IMAGE);
+    }
   };
 
   const batchDelete = () => {
@@ -232,7 +246,7 @@ function MessageManage(props) {
     setCiphertext(ciphertext);
     setSymmetricKeyCiphertext(symmetricKeyCiphertext);
     setSign(sign);
-    setSaveUri(MESSAGE_DELETE);
+    setSaveUri(MESSAGE_DELETE_TEXT);
 
     setEncryptModalVisible(true);
     setEncryptModalConfirmLoading(true);
@@ -245,7 +259,9 @@ function MessageManage(props) {
   const showDeleteModal = (row) => {
     modal.confirm({
       title: "刪除",
-      content: `你確定要刪除消息:${row.id}吗？`,
+      content: `你確定要刪除消息:${
+        row.message ? row.message : row.messageName
+      }吗？`,
       onOk: () => {
         singleDelete(row);
         return Promise.resolve();

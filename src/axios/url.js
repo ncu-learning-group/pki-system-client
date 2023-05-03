@@ -13,9 +13,10 @@ export const BOARD_SAVE = prefix + "/board/save";
 export const BOARD_DELETE = prefix + "/board/delete";
 export const MESSAGE_PAGE = prefix + "/boardMessage/page";
 export const MESSAGE_PAGE_IMAGE = prefix + "/boardMessage/pageImage";
-export const MESSAGE_SAVE = prefix + "/boardMessage/save";
+export const MESSAGE_SAVE_TEXT = prefix + "/boardMessage/save";
 export const MESSAGE_SAVE_IMAGE = prefix + "/boardMessage/saveImage";
-export const MESSAGE_DELETE = prefix + "/boardMessage/delete";
+export const MESSAGE_DELETE_TEXT = prefix + "/boardMessage/delete";
+export const MESSAGE_DELETE_IMAGE = prefix + "/boardMessage/deleteImage";
 
 export const USER_PAGE = prefix + "/managerUser/page";
 export const USER_SAVE = prefix + "/managerUser/save";

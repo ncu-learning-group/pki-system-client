@@ -9,6 +9,7 @@ import {
   BOARD_SAVE,
   MESSAGE_DELETE_TEXT,
   MESSAGE_PAGE,
+  MESSAGE_PAGE_IMAGE,
   SEND,
 } from "../../../../axios/url.js";
 import { useForm } from "antd/es/form/Form.js";
@@ -17,7 +18,8 @@ import { getParam } from "../../../../utils/getParam.js";
 import EncryptModal from "../../../common/EncryptModal.jsx";
 import {
   setInformationBoardType,
-  setMessages,
+  setPictures,
+  setTexts,
 } from "../../../../store/messagesSlice.js";
 import "./index.css";
 import ComProTable from "../../../common/ComProTable.jsx";
@@ -84,22 +86,54 @@ function InformationBoardManage(props) {
       title: "播放",
       content: `是否要播放信息板：${row.boardName}`,
       onOk: () => {
-        setInformationBoardType(row.informationBoardType);
-        get(MESSAGE_PAGE, { boardId: row.id }).then((res) => {
-          if (res.code === "SUCCESS") {
-            dispatch(
-              setMessages(
-                res.data.content.map((item) => {
-                  return item.message;
-                })
-              )
-            );
-            api.success({
-              message: `成功`,
-              description: `开始播放信息板：${row.boardName} `,
-            });
-          }
-        });
+        dispatch(
+          setInformationBoardType(row.boardType === "1" ? "TEXT" : "PICTURE")
+        );
+        if (row.boardType === "1") {
+          get(MESSAGE_PAGE, {
+            boardId: row.id,
+          }).then((res) => {
+            if (res.code === "SUCCESS") {
+              dispatch(
+                setTexts(
+                  res.data.content.map((item) => {
+                    return row.boardType === "1"
+                      ? item.message
+                      : `${item.id}${item.fileName.substring(
+                          item.fileName.lastIndexOf(".")
+                        )}`;
+                  })
+                )
+              );
+              api.success({
+                message: `成功`,
+                description: `开始播放信息板：${row.boardName} `,
+              });
+            }
+          });
+        } else {
+          get(MESSAGE_PAGE_IMAGE, {
+            boardId: row.id,
+          }).then((res) => {
+            if (res.code === "SUCCESS") {
+              dispatch(
+                setPictures(
+                  res.data.content.map((item) => {
+                    return row.boardType === "1"
+                      ? item.message
+                      : `${item.id}${item.fileName.substring(
+                          item.fileName.lastIndexOf(".")
+                        )}`;
+                  })
+                )
+              );
+              api.success({
+                message: `成功`,
+                description: `开始播放信息板：${row.boardName} `,
+              });
+            }
+          });
+        }
       },
       onCancel: () => {},
       okText: "是",

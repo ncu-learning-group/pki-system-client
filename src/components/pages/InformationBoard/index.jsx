@@ -22,7 +22,8 @@ function InformationBoard(props) {
 
   const [api, contextHolder] = notification.useNotification();
 
-  const messages = useSelector((state) => state.message.messages);
+  const texts = useSelector((state) => state.message.texts);
+  const pictures = useSelector((state) => state.message.pictures);
   const informationBoardType = useSelector(
     (state) => state.message.informationBoardType
   );
@@ -35,6 +36,11 @@ function InformationBoard(props) {
   // ******************图片滚动******************************
   const [imageSetting, setImageSetting] = useState(false);
   // ******************图片滚动******************************
+
+  useEffect(() => {
+    const test = pictures;
+    debugger;
+  }, []);
 
   const saveTextSetting = () => {
     form1
@@ -79,7 +85,10 @@ function InformationBoard(props) {
       {informationBoardType !== "PICTURE" && (
         <Card
           title="文字滚动"
-          style={{ margin: "10px" }}
+          style={{
+            margin: "10px",
+            height: informationBoardType !== "ALL" ? "50rem" : "25rem",
+          }}
           extra={
             <>
               <SettingOutlined
@@ -91,9 +100,9 @@ function InformationBoard(props) {
           }
         >
           {!textSetting ? (
-            messages.length ? (
+            texts.length ? (
               <>
-                {messages.map((value, index, array) => {
+                {texts.map((value, index, array) => {
                   return (
                     <KeyFrame
                       key={index}
@@ -135,14 +144,41 @@ function InformationBoard(props) {
       )}
 
       {informationBoardType !== "TEXT" && (
-        <Card title="图片滚动" style={{ margin: "10px" }}>
+        <Card
+          title="图片滚动"
+          style={{
+            margin: "10px",
+            height: informationBoardType !== "ALL" ? "50rem" : "25rem",
+          }}
+        >
           {!imageSetting ? (
-            messages.length ? (
-              <Carousel autoplay>
-                {messages.map((message) => {
+            pictures.length ? (
+              <Carousel>
+                {pictures.map((message, index) => {
                   return (
-                    <div>
-                      <div style={contentStyle}>{message}</div>
+                    <div key={index}>
+                      <div
+                        style={{
+                          color: "#fff",
+                          height:
+                            informationBoardType !== "ALL" ? "35rem" : "15rem",
+                          lineHeight:
+                            informationBoardType !== "ALL" ? "35rem" : "15rem",
+                          textAlign: "center",
+                          background: "#85a0d7",
+                          padding: "20px 0",
+                        }}
+                      >
+                        <Image
+                          style={{ maxHeight: "30rem" }}
+                          preview={false}
+                          src={
+                            message === "default-image.jpg"
+                              ? "https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
+                              : `http://localhost:8080/images/${message}`
+                          }
+                        />
+                      </div>
                     </div>
                   );
                 })}
@@ -176,8 +212,6 @@ function InformationBoard(props) {
           )}
         </Card>
       )}
-
-      <Image src="http://localhost:8080/images/4028b88187e0e26e0187e14dab530007.jpg" />
     </React.Fragment>
   );
 }

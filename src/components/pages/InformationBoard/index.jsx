@@ -37,10 +37,7 @@ function InformationBoard(props) {
   const [imageSetting, setImageSetting] = useState(false);
   // ******************图片滚动******************************
 
-  useEffect(() => {
-    const test = pictures;
-    debugger;
-  }, []);
+  useEffect(() => {}, []);
 
   const saveTextSetting = () => {
     form1
@@ -175,7 +172,7 @@ function InformationBoard(props) {
                           src={
                             message === "default-image.jpg"
                               ? "https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
-                              : `http://localhost:8080/images/${message}`
+                              : `http://localhost:8080/images/${message}?randomKey=${Math.random()}`
                           }
                         />
                       </div>

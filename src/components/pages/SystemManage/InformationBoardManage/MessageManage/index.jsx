@@ -53,6 +53,7 @@ function MessageManage(props) {
     (state) => state.key.symmetricEncryptionAlgorithmIV
   );
   const hashAlgorithm = useSelector((state) => state.key.hashAlgorithm);
+  const userId = useSelector((state) => state.login.userId);
 
   const { board, disabled } = props;
   const informationBoardType = board.boardType === "1" ? "TEXT" : "PICTURE";
@@ -141,8 +142,12 @@ function MessageManage(props) {
       const object = {
         message: res.messageContent,
         boardId: board.id,
+        createdBy: userId,
       };
-      if (message) object.id = message.id;
+      if (message) {
+        object.id = message.id;
+        object.createdBy = message.createdBy;
+      }
 
       const param = getParam(
         object,
@@ -166,9 +171,13 @@ function MessageManage(props) {
       }
       formData.append("boardId", board.id);
       formData.append("messageName", res.messageName);
-      if (message) formData.append("id", message.id);
-      setConfirmLoading(true);
+      formData.append("createdBy", userId);
+      if (message) {
+        formData.append("id", message.id);
+        formData.append("createdBy", message.createdBy);
+      }
 
+      setConfirmLoading(true);
       getUploadData(formData)
         .then((res) => {
           if (res.code === "SUCCESS") {
